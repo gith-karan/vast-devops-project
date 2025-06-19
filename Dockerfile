@@ -8,7 +8,7 @@ ENV PYTHONUNBUFFERED=1
 # Set work directory
 WORKDIR /app
 
-# Install system dependencies for PostgreSQL (NOT MySQL)
+# Install system dependencies for PostgreSQL and other requirements
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         build-essential \
@@ -16,6 +16,7 @@ RUN apt-get update \
         libmagic1 \
         libmagic-dev \
         file \
+        netcat-openbsd \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy and install Python dependencies
@@ -28,18 +29,14 @@ COPY . /app/
 # Create staticfiles directory
 RUN mkdir -p /app/staticfiles
 
-# Collect static files
-RUN python manage.py collectstatic --noinput --settings=vast_project.render_settings || echo "Static collection will run on deployment"
+# Collect static files for production
+RUN python manage.py collectstatic --noinput --settings=vast_project.render_settings || echo "collectstatic will run on first deployment"
 
-# Expose port
+# Expose the port
 EXPOSE $PORT
 
-# Create and set startup script
-RUN echo '#!/bin/bash\n\
-python manage.py migrate --settings=vast_project.render_settings\n\
-python manage.py collectstatic --noinput --settings=vast_project.render_settings\n\
-gunicorn vast_project.wsgi:application --bind 0.0.0.0:$PORT --settings=vast_project.render_settings' > /app/start.sh
-
+# Create startup script
+RUN echo '#!/bin/bash\npython manage.py migrate --settings=vast_project.render_settings\ngunicorn vast_project.wsgi:application --bind 0.0.0.0:$PORT --settings=vast_project.render_settings' > /app/start.sh
 RUN chmod +x /app/start.sh
 
 # Run the application
