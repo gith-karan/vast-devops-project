@@ -150,7 +150,6 @@ class CICDPipeline:
         else:
             print("💥 CI/CD PIPELINE FAILED!")
         
-        # Save report to file
         with open(f'pipeline_report_{self.build_number}.json', 'w') as f:
             json.dump(self.results, f, indent=2)
         
