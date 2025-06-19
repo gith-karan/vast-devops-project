@@ -6,9 +6,9 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Security
-SECRET_KEY = os.getenv('SECRET_KEY', 'render-production-secret-key-change-this')
+SECRET_KEY = os.getenv('SECRET_KEY', 'render-secret-key-change-this')
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
-ALLOWED_HOSTS = ['*']  # Render handles this securely
+ALLOWED_HOSTS = ['*']
 
 # Applications
 INSTALLED_APPS = [
@@ -25,7 +25,7 @@ INSTALLED_APPS = [
 # Middleware
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # For static files in production
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -55,7 +55,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'vast_project.wsgi.application'
 
-# Database (PostgreSQL for Render.com)
+# PostgreSQL Database (Render provides this)
 DATABASES = {
     'default': dj_database_url.parse(
         os.getenv('DATABASE_URL', 'sqlite:///db.sqlite3')
@@ -68,7 +68,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Email settings (keep your existing)
+# Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -76,5 +76,4 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'santaclaus4041@gmail.com')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'pjmt nauv kotl kast')
 
-# Default
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
