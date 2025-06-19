@@ -28,8 +28,8 @@ services:
     depends_on:
       - db
     volumes:
-      - ./staticfiles:/app/staticfiles  # Mount static files
-      - ./static:/app/static  # Mount your source static files
+      - ./staticfiles:/app/staticfiles
+      - ./static:/app/static
 
 volumes:
   mysql_data:

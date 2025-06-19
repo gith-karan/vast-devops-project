@@ -1,4 +1,4 @@
-# Use Python 3.12 slim image
+# Use official Python runtime as base image
 FROM python:3.12-slim
 
 # Set environment variables
@@ -8,36 +8,33 @@ ENV PYTHONUNBUFFERED=1
 # Set work directory
 WORKDIR /app
 
-# Install system dependencies for PostgreSQL and other requirements
+# Install system dependencies (including libmagic for python-magic)
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
+        default-libmysqlclient-dev \
         build-essential \
-        libpq-dev \
+        pkg-config \
+        netcat-openbsd \
         libmagic1 \
         libmagic-dev \
         file \
-        netcat-openbsd \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy and install Python dependencies
+# Install Python dependencies
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project files
+# Copy project
 COPY . /app/
 
 # Create staticfiles directory
 RUN mkdir -p /app/staticfiles
 
-# Collect static files for production
-RUN python manage.py collectstatic --noinput --settings=vast_project.render_settings || echo "collectstatic will run on first deployment"
+# Collect static files properly
+RUN python manage.py collectstatic --noinput --settings=vast_project.settings_prod --clear
 
-# Expose the port
-EXPOSE $PORT
-
-# Create startup script
-RUN echo '#!/bin/bash\npython manage.py migrate --settings=vast_project.render_settings\ngunicorn vast_project.wsgi:application --bind 0.0.0.0:$PORT --settings=vast_project.render_settings' > /app/start.sh
-RUN chmod +x /app/start.sh
+# Expose port
+EXPOSE 8000
 
 # Run the application
-CMD ["/app/start.sh"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000", "--settings=vast_project.settings_prod"]
