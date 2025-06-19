@@ -150,24 +150,68 @@ class CICDPipeline:
         
         print(f"📄 Detailed report saved to: pipeline_report_{self.build_number}.json")
 
+
     def run_pipeline(self):
-        """Execute the full CI/CD pipeline"""
+        """Execute the full CI/CD pipeline with proper failure handling"""
         print(f"🏁 STARTING CI/CD PIPELINE FOR {self.project_name}")
         print("=" * 60)
         
         stages = [
             self.stage_code_checkout,
-            self.stage_dependency_check,
+            self.stage_dependency_check, 
             self.stage_security_scan,
             self.stage_railway_readiness
         ]
         
-        for stage in stages:
-            if not stage():
-                print(f"\n💥 Pipeline failed at stage: {stage.__name__}")
+        failed_stage = None
+        failed_at_stage = 0
+        
+        # Execute each stage and stop on first failure
+        for i, stage in enumerate(stages):
+            try:
+                if not stage():
+                    failed_stage = stage.__name__
+                    failed_at_stage = i + 1
+                    print(f"\n💥 PIPELINE FAILED AT STAGE {failed_at_stage}: {failed_stage}")
+                    print(f"🛑 CRITICAL FAILURE - DEPLOYMENT BLOCKED")
+                    break
+            except Exception as e:
+                failed_stage = stage.__name__
+                failed_at_stage = i + 1
+                print(f"\n💥 PIPELINE CRASHED AT STAGE {failed_at_stage}: {failed_stage}")
+                print(f"🛑 EXCEPTION: {str(e)}")
                 break
         
+        # Generate comprehensive report
         self.generate_report()
+        
+        # CRITICAL: Determine if pipeline should pass or fail
+        total_stages = len(self.results['stages'])
+        passed_stages = sum(1 for stage in self.results['stages'].values() if stage['success'])
+        
+        print(f"\n📊 PIPELINE SUMMARY:")
+        print(f"Stages Completed: {len(self.results['stages'])}/{len(stages)}")
+        print(f"Stages Passed: {passed_stages}/{total_stages}")
+        
+        if failed_stage or passed_stages < total_stages:
+            # ANY failure should block deployment
+            print(f"\n🚨 CI/CD PIPELINE FAILED!")
+            print(f"❌ Failed Stage: {failed_stage or 'Unknown'}")
+            print(f"🛑 DEPLOYMENT BLOCKED - Production Protected")
+            print(f"🔧 Fix the issues and try again")
+            
+            # Exit with error code to fail GitHub Actions
+            exit(1)
+        else:
+            # All stages passed
+            print(f"\n🎉 CI/CD PIPELINE SUCCESS!")
+            print(f"✅ All {total_stages} stages passed")
+            print(f"🚀 DEPLOYMENT AUTHORIZED - Safe to deploy")
+            
+            # Exit with success code
+            exit(0)
+
+
 
 if __name__ == "__main__":
     pipeline = CICDPipeline()
