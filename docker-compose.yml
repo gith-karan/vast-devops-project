@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     image: mysql:8.0
@@ -11,6 +9,12 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   web:
     build: .
@@ -26,7 +30,8 @@ services:
       - DB_PORT=3306
       - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
     depends_on:
-      - db
+      db:
+        condition: service_healthy  # Wait for healthy, not just started
     volumes:
       - ./staticfiles:/app/staticfiles
       - ./static:/app/static
