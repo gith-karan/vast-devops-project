@@ -1,4 +1,4 @@
-name: VAST Project - Real CI/CD Pipeline
+name: VAST Project - CI/CD Pipeline
 
 on:
   push:
