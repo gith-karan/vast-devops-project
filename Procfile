@@ -1,0 +1,1 @@
+web: python manage.py migrate --settings=vast_project.railway_settings && python manage.py collectstatic --noinput --settings=vast_project.railway_settings && gunicorn vast_project.wsgi:application --bind 0.0.0.0:$PORT --settings=vast_project.railway_settings
