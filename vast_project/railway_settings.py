@@ -5,9 +5,9 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Railway environment variables
-SECRET_KEY = os.getenv('SECRET_KEY', 'railway-secret-key')
+SECRET_KEY = os.getenv('SECRET_KEY', 'railway-secret-key-change-this')
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
-ALLOWED_HOSTS = ['*']  # Railway handles this
+ALLOWED_HOSTS = ['*']  # Railway handles this securely
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -51,7 +51,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'vast_project.wsgi.application'
 
-# Railway PostgreSQL database
+# Railway PostgreSQL database (automatically provided)
 DATABASES = {
     'default': dj_database_url.parse(
         os.getenv('DATABASE_URL', 'sqlite:///db.sqlite3')
@@ -66,7 +66,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Email
+# Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587

@@ -1,4 +1,4 @@
-# Use official Python runtime as base image
+# Use Python 3.12 slim image
 FROM python:3.12-slim
 
 # Set environment variables
@@ -8,51 +8,43 @@ ENV PYTHONUNBUFFERED=1
 # Set work directory
 WORKDIR /app
 
-# Install system dependencies (including libmagic for python-magic)
+# Install system dependencies for PostgreSQL (not MySQL)
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        default-libmysqlclient-dev \
         build-essential \
-        pkg-config \
-        netcat-openbsd \
+        libpq-dev \
         libmagic1 \
         libmagic-dev \
         file \
-        wait-for-it \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
+# Copy and install Python dependencies
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project
+# Copy project files
 COPY . /app/
 
 # Create staticfiles directory
 RUN mkdir -p /app/staticfiles
 
-# Create wait script
+# Expose port
+EXPOSE $PORT
+
+# Create Railway startup script (no waiting for external DB)
 RUN echo '#!/bin/bash\n\
-echo "Waiting for MySQL to be ready..."\n\
-while ! nc -z db 3306; do\n\
-  echo "MySQL is unavailable - sleeping"\n\
-  sleep 2\n\
-done\n\
-echo "MySQL is up - executing command"\n\
+echo "Starting Railway deployment..."\n\
 \n\
 echo "Running migrations..."\n\
-python manage.py migrate --settings=vast_project.settings_prod\n\
+python manage.py migrate --settings=vast_project.railway_settings\n\
 \n\
 echo "Collecting static files..."\n\
-python manage.py collectstatic --noinput --settings=vast_project.settings_prod --clear\n\
+python manage.py collectstatic --noinput --settings=vast_project.railway_settings\n\
 \n\
-echo "Starting Django server..."\n\
-python manage.py runserver 0.0.0.0:8000 --settings=vast_project.settings_prod' > /app/wait-and-start.sh
+echo "Starting Django server on Railway..."\n\
+python manage.py runserver 0.0.0.0:$PORT --settings=vast_project.railway_settings' > /app/railway-start.sh
 
-RUN chmod +x /app/wait-and-start.sh
+RUN chmod +x /app/railway-start.sh
 
-# Expose port
-EXPOSE 8000
-
-# Run the wait script instead of direct Django
-CMD ["/app/wait-and-start.sh"]
+# Run the application
+CMD ["/app/railway-start.sh"]
