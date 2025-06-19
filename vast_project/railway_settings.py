@@ -51,7 +51,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'vast_project.wsgi.application'
 
-# PostgreSQL database (Railway provides this via DATABASE_URL)
+# PostgreSQL database (Railway provides this via DATABASE_URL) 
 DATABASES = {
     'default': dj_database_url.parse(
         os.getenv('DATABASE_URL', 'sqlite:///db.sqlite3')
