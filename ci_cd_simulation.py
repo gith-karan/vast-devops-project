@@ -61,11 +61,10 @@ class CICDPipeline:
         print(f"\n🔒 STAGE 3: Security & Configuration Scan")
         print("-" * 40)
         
-        security_issues = []  # Blocking issues
-        security_warnings = []  # Non-blocking warnings
+        security_issues = []  
+        security_warnings = []  
         
         try:
-            # Check main settings
             settings_files = ['vast_project/settings.py', 'vast_project/railway_settings.py']
             
             for settings_file in settings_files:
@@ -73,35 +72,29 @@ class CICDPipeline:
                     with open(settings_file, 'r') as f:
                         content = f.read()
                     
-                    # BLOCKING: DEBUG mode in production settings
                     if "DEBUG = True" in content and "railway_settings" in settings_file:
                         security_issues.append(f"DEBUG mode enabled in {settings_file}")
                     
-                    # WARNING ONLY: Default insecure secret key (non-blocking)
                     if "SECRET_KEY = 'django-insecure-" in content:
                         security_warnings.append(f"Default insecure secret key in {settings_file}")
             
-            # Check for Railway-specific configurations
             if os.path.exists('vast_project/railway_settings.py'):
                 with open('vast_project/railway_settings.py', 'r') as f:
                     content = f.read()
                     if 'dj_database_url' not in content:
                         security_issues.append("Missing Railway database configuration")
             
-            # Log warnings (non-blocking)
             if security_warnings:
                 print("⚠️  SECURITY WARNINGS (Non-blocking):")
                 for warning in security_warnings:
                     print(f"   ⚠️  {warning}")
                 print("   💡 Consider addressing these warnings for improved security")
             
-            # Check for blocking issues
             if security_issues:
                 message = f"Found {len(security_issues)} blocking security issues: {', '.join(security_issues)}"
                 self.log_stage("Security Scan", False, message)
                 return False
             else:
-                # Success message includes warning count if any
                 warning_note = f" ({len(security_warnings)} warnings noted)" if security_warnings else ""
                 success_message = f"No blocking security issues detected{warning_note}"
                 self.log_stage("Security Scan", True, success_message)
@@ -117,7 +110,6 @@ class CICDPipeline:
         print("-" * 40)
         
         try:
-            # Check Django settings for Railway
             result = subprocess.run(
                 ["python", "-c", "from vast_project import railway_settings; print('Railway settings OK')"],
                 capture_output=True, text=True
@@ -180,7 +172,6 @@ class CICDPipeline:
         failed_stage = None
         failed_at_stage = 0
         
-        # Execute each stage and stop on first failure
         for i, stage in enumerate(stages):
             try:
                 if not stage():
@@ -196,10 +187,8 @@ class CICDPipeline:
                 print(f"🛑 EXCEPTION: {str(e)}")
                 break
         
-        # Generate comprehensive report
         self.generate_report()
         
-        # CRITICAL: Determine if pipeline should pass or fail
         total_stages = len(self.results['stages'])
         passed_stages = sum(1 for stage in self.results['stages'].values() if stage['success'])
         
@@ -208,21 +197,17 @@ class CICDPipeline:
         print(f"Stages Passed: {passed_stages}/{total_stages}")
         
         if failed_stage or passed_stages < total_stages:
-            # ANY failure should block deployment
             print(f"\n🚨 CI/CD PIPELINE FAILED!")
             print(f"❌ Failed Stage: {failed_stage or 'Unknown'}")
             print(f"🛑 DEPLOYMENT BLOCKED - Production Protected")
             print(f"🔧 Fix the issues and try again")
             
-            # Exit with error code to fail GitHub Actions
             exit(1)
         else:
-            # All stages passed
             print(f"\n🎉 CI/CD PIPELINE SUCCESS!")
             print(f"✅ All {total_stages} stages passed")
             print(f"🚀 DEPLOYMENT AUTHORIZED - Safe to deploy")
             
-            # Exit with success code
             exit(0)
 
 
