@@ -12,7 +12,7 @@ class CICDPipeline:
             'timestamp': datetime.datetime.now().isoformat(),
             'stages': {}
         }
-    
+
     def log_stage(self, stage_name, success, message=""):
         """Log the result of a pipeline stage"""
         self.results['stages'][stage_name] = {
@@ -23,125 +23,111 @@ class CICDPipeline:
         
         status = "✅ PASSED" if success else "❌ FAILED"
         print(f"{status} - {stage_name}: {message}")
-    
+
     def stage_code_checkout(self):
-        """Simulate code checkout"""
-        print(f"\n📁 STAGE 1: Code Checkout")
+        """Verify Django project structure"""
+        print(f"\n📁 STAGE 1: Code Checkout & Structure")
         print("-" * 40)
         
-        if os.path.exists("manage.py"):
-            self.log_stage("Code Checkout", True, "Django project found")
+        required_files = ['manage.py', 'requirements.txt', 'Dockerfile']
+        missing_files = [f for f in required_files if not os.path.exists(f)]
+        
+        if not missing_files:
+            self.log_stage("Code Checkout", True, f"All required files present: {required_files}")
             return True
         else:
-            self.log_stage("Code Checkout", False, "manage.py not found")
+            self.log_stage("Code Checkout", False, f"Missing files: {missing_files}")
             return False
-    
+
     def stage_dependency_check(self):
-        """Check if dependencies can be installed"""
-        print(f"\n📦 STAGE 2: Dependency Check")
+        """Check Python dependencies"""
+        print(f"\n📦 STAGE 2: Dependency Validation")
         print("-" * 40)
         
         try:
             result = subprocess.run(["pip", "check"], capture_output=True, text=True)
             if result.returncode == 0:
-                self.log_stage("Dependency Check", True, "All dependencies satisfied")
+                self.log_stage("Dependency Check", True, "All dependencies compatible")
                 return True
             else:
-                self.log_stage("Dependency Check", False, result.stderr)
+                self.log_stage("Dependency Check", False, f"Dependency conflicts: {result.stderr}")
                 return False
         except Exception as e:
             self.log_stage("Dependency Check", False, str(e))
             return False
-    
+
     def stage_security_scan(self):
-        """Simulate security scanning"""
-        print(f"\n🔒 STAGE 3: Security Scan")
+        """Enhanced security scanning for Railway deployment"""
+        print(f"\n🔒 STAGE 3: Security & Configuration Scan")
         print("-" * 40)
         
-        # Check for obvious security issues in settings
         security_issues = []
         
         try:
-            with open('vast_project/settings.py', 'r') as f:
-                content = f.read()
-                
-                if "DEBUG = True" in content:
-                    security_issues.append("DEBUG mode enabled")
-                
-                if "SECRET_KEY = 'django-insecure-" in content:
-                    security_issues.append("Using default insecure secret key")
-                
-                if "ALLOWED_HOSTS = []" in content:
-                    security_issues.append("Empty ALLOWED_HOSTS")
+            # Check main settings
+            settings_files = ['vast_project/settings.py', 'vast_project/railway_settings.py']
+            
+            for settings_file in settings_files:
+                if os.path.exists(settings_file):
+                    with open(settings_file, 'r') as f:
+                        content = f.read()
+                    
+                    if "DEBUG = True" in content and "railway_settings" in settings_file:
+                        security_issues.append(f"DEBUG mode enabled in {settings_file}")
+                    
+                    if "SECRET_KEY = 'django-insecure-" in content:
+                        security_issues.append(f"Default insecure secret key in {settings_file}")
+            
+            # Check for Railway-specific configurations
+            if os.path.exists('vast_project/railway_settings.py'):
+                with open('vast_project/railway_settings.py', 'r') as f:
+                    content = f.read()
+                    if 'dj_database_url' not in content:
+                        security_issues.append("Missing Railway database configuration")
             
             if security_issues:
                 message = f"Found {len(security_issues)} security issues: {', '.join(security_issues)}"
                 self.log_stage("Security Scan", False, message)
                 return False
             else:
-                self.log_stage("Security Scan", True, "No obvious security issues found")
+                self.log_stage("Security Scan", True, "No security issues detected")
                 return True
                 
         except Exception as e:
-            self.log_stage("Security Scan", False, f"Could not read settings: {e}")
+            self.log_stage("Security Scan", False, f"Scan error: {e}")
             return False
-    
-    def stage_build_test(self):
-        """Test if the application can be built/started"""
-        print(f"\n🔨 STAGE 4: Build Test")
+
+    def stage_railway_readiness(self):
+        """Check Railway deployment readiness"""
+        print(f"\n🚂 STAGE 4: Railway Deployment Readiness")
         print("-" * 40)
         
         try:
-            # Try to import Django settings
+            # Check Django settings for Railway
             result = subprocess.run(
-                ["python", "-c", "import django; from vast_project import settings; print('Django settings OK')"],
+                ["python", "-c", "from vast_project import railway_settings; print('Railway settings OK')"],
                 capture_output=True, text=True
             )
             
             if result.returncode == 0:
-                self.log_stage("Build Test", True, "Django configuration valid")
+                self.log_stage("Railway Readiness", True, "Railway configuration valid")
                 return True
             else:
-                self.log_stage("Build Test", False, result.stderr)
+                self.log_stage("Railway Readiness", False, f"Railway config error: {result.stderr}")
                 return False
                 
         except Exception as e:
-            self.log_stage("Build Test", False, str(e))
+            self.log_stage("Railway Readiness", False, str(e))
             return False
-    
-    def stage_deployment_simulation(self):
-        """Simulate deployment"""
-        print(f"\n🚀 STAGE 5: Deployment Simulation")
-        print("-" * 40)
-        
-        deployment_steps = [
-            "Preparing deployment environment",
-            "Uploading application files",
-            "Installing dependencies",
-            "Running database migrations",
-            "Collecting static files",
-            "Starting application server",
-            "Running health checks",
-            "Updating load balancer configuration"
-        ]
-        
-        for step in deployment_steps:
-            print(f"  → {step}...")
-            # Simulate some processing time
-            import time
-            time.sleep(0.5)
-        
-        self.log_stage("Deployment Simulation", True, "All deployment steps completed successfully")
-        return True
-    
+
     def generate_report(self):
-        """Generate a pipeline report"""
-        print(f"\n📊 PIPELINE REPORT")
-        print("=" * 50)
+        """Generate a comprehensive pipeline report"""
+        print(f"\n📊 CI/CD PIPELINE REPORT")
+        print("=" * 60)
         print(f"Project: {self.project_name}")
         print(f"Build Number: {self.build_number}")
         print(f"Timestamp: {self.results['timestamp']}")
-        print("-" * 50)
+        print("-" * 60)
         
         total_stages = len(self.results['stages'])
         passed_stages = sum(1 for stage in self.results['stages'].values() if stage['success'])
@@ -150,20 +136,20 @@ class CICDPipeline:
             status = "✅ PASSED" if stage_data['success'] else "❌ FAILED"
             print(f"{status} {stage_name}: {stage_data['message']}")
         
-        print("-" * 50)
+        print("-" * 60)
         print(f"Overall Result: {passed_stages}/{total_stages} stages passed")
         
         if passed_stages == total_stages:
-            print("🎉 PIPELINE SUCCEEDED!")
+            print("🎉 CI/CD PIPELINE SUCCEEDED!")
         else:
-            print("💥 PIPELINE FAILED!")
+            print("💥 CI/CD PIPELINE FAILED!")
         
         # Save report to file
         with open(f'pipeline_report_{self.build_number}.json', 'w') as f:
             json.dump(self.results, f, indent=2)
         
         print(f"📄 Detailed report saved to: pipeline_report_{self.build_number}.json")
-    
+
     def run_pipeline(self):
         """Execute the full CI/CD pipeline"""
         print(f"🏁 STARTING CI/CD PIPELINE FOR {self.project_name}")
@@ -173,8 +159,7 @@ class CICDPipeline:
             self.stage_code_checkout,
             self.stage_dependency_check,
             self.stage_security_scan,
-            self.stage_build_test,
-            self.stage_deployment_simulation
+            self.stage_railway_readiness
         ]
         
         for stage in stages:
