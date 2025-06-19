@@ -55,3 +55,4 @@ jobs:
         echo "✅ Django Config: VALIDATED" >> $GITHUB_STEP_SUMMARY
         echo "✅ Migrations: TESTED" >> $GITHUB_STEP_SUMMARY
         echo "🚂 Deployment authorized - Railway will deploy automatically" >> $GITHUB_STEP_SUMMARY
+
