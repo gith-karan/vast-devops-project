@@ -31,7 +31,7 @@ services:
       - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
     depends_on:
       db:
-        condition: service_healthy  # Wait for healthy, not just started
+        condition: service_healthy
     volumes:
       - ./staticfiles:/app/staticfiles
       - ./static:/app/static
