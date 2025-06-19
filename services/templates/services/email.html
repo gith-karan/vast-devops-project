@@ -1,0 +1,833 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Email Address Scanner - VAST</title>
+    <link rel="stylesheet" href="{% static 'styles/email.css' %}" />
+    <link rel="stylesheet" href="{% static 'styles/navbar.css' %}" />
+    <script src="{% static 'styles/navbar.js' %}" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <!-- navbar container -->
+    <div class="navbar-container">
+        <nav class="navbar">
+            <div class="brand-container">
+                <img src="{% static 'img/nav_logo.png' %}" alt="VAST Logo" class="logo-img">
+                <span class="brand-text">Virus Analysis Scanning Tool</span>
+            </div>
+
+            <div class="mobile-menu-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white">
+                    <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+                </svg>
+            </div>
+
+            <div class="nav-links">
+                <a href="{% url 'accounts:home' %}" class="nav-item">Home</a>
+
+                <div class="dropdown">
+                    <a href="email.html" class="nav-item active">Services ▾</a>
+                    <div class="dropdown-content services-dropdown">
+                        <a href="{% url 'services:email_scanner' %}" class="dropdown-item">
+                            <div class="dropdown-icon">
+                                <img src="https://api.iconify.design/mdi:email-outline.svg?color=%2300d2f7"
+                                    alt="Email Scanner" class="drop_icon_hover">
+                            </div>
+                            <span>E-Mail Scanner</span>
+                            <div class="arrow-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="#00d2f7" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="{% url 'services:url_scanner' %}" class="dropdown-item">
+                            <div class="dropdown-icon">
+                                <img src="https://api.iconify.design/mdi:web.svg?color=%2300d2f7" alt="URL Scanner"
+                                    class="drop_icon_hover">
+                            </div>
+                            <span>URL Scanner</span>
+                            <div class="arrow-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="#00d2f7" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="{% url 'services:file_scanner' %}" class="dropdown-item">
+                            <div class="dropdown-icon">
+                                <img src="https://api.iconify.design/mdi:file-document-outline.svg?color=%2300d2f7"
+                                    alt="File Scanner" class="drop_icon_hover">
+                            </div>
+                            <span>File Scanner</span>
+                            <div class="arrow-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="#00d2f7" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item">
+                            <div class="dropdown-icon">
+                                <img src="{% static 'img/Network Scanner Logo.png' %}" alt="Network Scanner" class="drop_icon_hover">
+                            </div>
+                            <span>Network Scanner</span>
+                            <div class="arrow-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="#00d2f7" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <a href="{% url 'accounts:about' %}" class="nav-item">About Us</a>
+                <a href="{% url 'accounts:contact' %}" class="nav-item">Contact us</a>
+
+                <div class="dropdown">
+                    <div class="user-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
+                        </svg>
+                    </div>
+                    <div class="dropdown-content">
+                        {% if is_guest %}
+                            <a href="{% url 'accounts:login' %}" class="dropdown-item">Log In / Sign Up</a>
+                        {% else %}
+                            <a href="#" class="dropdown-item username-display">{{ username }}</a>
+                            {% if joined_date %}
+                            <a href="#" class="dropdown-item joined-date">Joined: {{ joined_date|date:"M d, Y" }}</a>
+                            {% endif %}
+                            <div class="dropdown-divider"></div>
+                            <a href="{% url 'accounts:logout' %}" class="dropdown-item">Log Out</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Email Scanner Section -->
+    <section class="email-scanner-section">
+        <h1 class="email-scanner-title">E-mail Address Scanner</h1>
+        {% csrf_token %}
+        <div class="email-scanner-container">
+            <!-- Scanner Input Form -->
+            <div class="scanner-input-container">
+                <input type="email" class="scanner-input" placeholder="vast@example.com" id="email-input">
+                <button class="submit-btn" id="scan-btn">SUBMIT</button>
+            </div>
+
+            <!-- Results Section -->
+            <div class="result-container">
+                <div class="result-row">
+                    <div class="result-label">E-mail Address :</div>
+                    <div class="result-value" id="result-email">-</div>
+                </div>
+                <div class="result-row" style="border-bottom: none;">
+                    <div class="result-label">Status:</div>
+                    <div class="result-value" id="result-status">-</div>
+                </div>
+                <div>
+                    <a href="#" class="view-report-btn" id="view-report">
+                        View Detailed Report
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- FAQ Section -->
+            <div class="faq-section">
+                <h2 class="faq-title">FAQs about E-mail Address Verifier</h2>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>What is E-mail Address Scanner?</span>
+                        <span class="faq-toggle">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>The E-mail Address Scanner is a tool that helps you verify if an email address is valid,
+                            properly formatted, and potentially risky. It checks for domain validity, syntax
+                            correctness, and scans against known malicious email patterns to help protect you from
+                            phishing and spam.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>How can I verify email addresses in bulk?</span>
+                        <span class="faq-toggle">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>For bulk email verification, you can upgrade to our premium plan which allows CSV uploads of
+                            up to 1000 email addresses at once. The premium plan also provides detailed reports and
+                            higher rate limits for larger organizations.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Is it free to use?</span>
+                        <span class="faq-toggle">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes, the basic E-mail Address Scanner is completely free to use with a limit of 25 scans per
+                            day. For higher volume needs or advanced features like bulk scanning, detailed threat
+                            intelligence, and API access, we offer affordable premium plans.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Does E-mail scanner use my data?</span>
+                        <span class="faq-toggle">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We respect your privacy. Email addresses you scan are not stored permanently or used for
+                            marketing purposes. They are only processed temporarily for verification and are
+                            automatically removed from our servers after 24 hours. For full details, please view our
+                            Privacy Policy.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" style="border-bottom: none;">
+                    <div class="faq-question">
+                        <span>Why you should choose V.A.S.T. E-mail Scanner?</span>
+                        <span class="faq-toggle">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>V.A.S.T. E-mail Scanner offers superior accuracy and protection compared to other tools. Our
+                            scanner doesn't just check if an email format is valid—it conducts deep analysis including
+                            domain reputation, MX record verification, and checks against our regularly updated database
+                            of malicious email patterns. We prioritize speed, ease of use, and privacy in all our tools.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feedback Section -->
+            <div class="feedback-section">
+                <h3 class="feedback-title">Feedback</h3>
+                <textarea class="feedback-input" id="feedback-text"
+                    placeholder="Your comments and feedback help us to improve."></textarea>
+                <div class="feedback-submit">
+                    <button class="feedback-btn" id="feedback-btn">
+                        Submit
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Detailed Report Modal -->
+    <div id="report-modal" class="report-modal">
+        <div class="report-modal-content">
+            <div class="report-modal-header">
+                <h2>Email Analysis Report</h2>
+                <span class="close-modal">&times;</span>
+                <a href="#" id="download-report" class="download-report">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                </a>
+            </div>
+            <div class="report-modal-body">
+                <div id="report-content">
+                    <!-- Report content will be here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <a href="{% url 'accounts:contact' %}" class="contact-btn">Contact Us For More Details</a>
+            <div class="social-section">
+                <div class="social-title">Social Media Links</div>
+                <div class="social-links">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy;VAST All right reserved
+        </div>
+    </footer>
+
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+        
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                question.parentElement.classList.toggle('active');
+            });
+        });
+
+        document.getElementById('scan-btn').addEventListener('click', function () {
+            const emailInput = document.getElementById('email-input').value;
+            const originalButtonText = this.innerHTML;
+        
+            this.innerHTML = 'Scanning...';
+            this.disabled = true;
+        
+            document.getElementById('result-email').textContent = emailInput || '-';
+            
+            const resultStatus = document.getElementById('result-status');
+            resultStatus.textContent = 'Scanning...';
+            resultStatus.style.color = '#FFA500'; 
+            
+            const formData = new FormData();
+            formData.append('email', emailInput);
+            
+            fetch('{% url "services:validate_email" %}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                },
+                body: formData
+            })
+            .then(response => {
+                return response.json().then(data => {
+                    return { ok: response.ok, status: response.status, data };
+                });
+            })
+            .then(result => {
+                const { ok, status, data } = result;
+                
+                if (data.limit_reached) {
+                    resultStatus.textContent = data.error;
+                    resultStatus.style.color = '#FF5252'; 
+                    showToast(data.error, false);
+                    return;
+                }
+                
+                if (!ok) {
+                    if (data.error) {
+                        resultStatus.textContent = data.error;
+                    } else {
+                        resultStatus.textContent = 'Error processing request';
+                    }
+                    resultStatus.style.color = '#FF5252'; 
+                    return;
+                }
+                
+                if (data.error) {
+                    resultStatus.textContent = data.error;
+                    resultStatus.style.color = '#FF5252'; 
+                } else {
+                    resultStatus.textContent = data.status;
+                    if (data.status === 'Safe') {
+                        resultStatus.style.color = '#4CAF50'; 
+                    } else {
+                        resultStatus.style.color = '#FF5252'; 
+                    }
+                    
+                    if (data.remaining_scans !== undefined) {
+                        showToast(`You have ${data.remaining_scans} scans remaining today.`, true);
+                    }
+                    window.emailScanResults = data;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                resultStatus.textContent = 'Error processing request';
+                resultStatus.style.color = '#FF5252'; 
+            })
+            .finally(() => {
+                this.innerHTML = originalButtonText;
+                this.disabled = false;
+            });
+        });
+
+        document.getElementById('view-report').addEventListener('click', function (e) {
+            e.preventDefault();
+            
+            if (!window.emailScanResults) {
+                alert('Please scan an email address first');
+                return;
+            }
+            
+            displayDetailedReport(window.emailScanResults);
+        });
+
+        function displayDetailedReport(results) {
+            const reportContent = document.getElementById('report-content');
+            
+            let reportHTML = `
+                <div class="report-section">
+                    <h3 class="report-section-title">Basic Information</h3>
+                    <div class="report-data-row">
+                        <div class="report-label">Email Address:</div>
+                        <div class="report-value">${results.email}</div>
+                    </div>
+                    <div class="report-data-row">
+                        <div class="report-label">Valid Format:</div>
+                        <div class="report-value">
+                            <span class="report-status ${results.is_valid ? 'status-safe' : 'status-danger'}">
+                                ${results.is_valid ? 'Yes' : 'No'}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="report-data-row">
+                        <div class="report-label">Domain Type:</div>
+                        <div class="report-value">${capitalizeFirstLetter(results.domain_type)}</div>
+                    </div>
+                    <div class="report-data-row">
+                        <div class="report-label">Disposable Email:</div>
+                        <div class="report-value">
+                            <span class="report-status ${results.is_disposable ? 'status-danger' : 'status-safe'}">
+                                ${results.is_disposable ? 'Yes' : 'No'}
+                            </span>
+                        </div>
+                    </div>
+                    <!-- Add Low Quality Email information -->
+                    ${results.is_low_quality ? `
+                    <div class="report-data-row">
+                        <div class="report-label">Low Quality Email:</div>
+                        <div class="report-value">
+                            <span class="report-status status-warning">
+                                Yes (Contains multiple dots or plus signs)
+                            </span>
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>`;
+        
+            if (results.domain_data && results.domain_data.domain) {
+                reportHTML += `
+                <div class="report-section">
+                    <h3 class="report-section-title">Domain Information</h3>
+                    <div class="report-data-row">
+                        <div class="report-label">Domain:</div>
+                        <div class="report-value">${results.domain_data.domain}</div>
+                    </div>
+                    <div class="report-data-row">
+                        <div class="report-label">Can Receive Email:</div>
+                        <div class="report-value">`;
+                
+                if (results.domain_data.mailbox_exists === null) {
+                    reportHTML += `
+                        <span class="report-status status-warning">
+                            Unknown (Verification Limited)
+                        </span>`;
+                } else {
+                    reportHTML += `
+                        <span class="report-status ${results.domain_data.can_receive_email ? 'status-safe' : 'status-danger'}">
+                            ${results.domain_data.can_receive_email ? 'Yes' : 'No'}
+                        </span>`;
+                }
+                
+                reportHTML += `</div>
+                    </div>`;
+                
+                if (results.domain_info) {
+                    if (results.domain_info.is_popular && results.domain_info.provider_info) {
+                        const provider = results.domain_info.provider_info;
+                        reportHTML += `
+                        <div class="report-data-row">
+                            <div class="report-label">Email Provider:</div>
+                            <div class="report-value">${provider.name}</div>
+                        </div>
+                        <div class="report-data-row">
+                            <div class="report-label">Provider Company:</div>
+                            <div class="report-value">${provider.company}</div>
+                        </div>
+                        <div class="report-data-row">
+                            <div class="report-label">Provider Website:</div>
+                            <div class="report-value"><a href="${provider.website}" target="_blank">${provider.website}</a></div>
+                        </div>
+                        <div class="report-data-row">
+                            <div class="report-label">Provider Founded:</div>
+                            <div class="report-value">${provider.founded}</div>
+                        </div>
+                        <div class="report-data-row">
+                            <div class="report-label">Reputation:</div>
+                            <div class="report-value">
+                                <span class="report-status ${provider.reputation === 'Excellent' ? 'status-safe' : 
+                                                            provider.reputation === 'Good' ? 'status-safe' : 
+                                                            'status-warning'}">
+                                    ${provider.reputation}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="report-data-row">
+                            <div class="report-label">Description:</div>
+                            <div class="report-value">${provider.description}</div>
+                        </div>`;
+                    } else {
+                        if (results.domain_info.organization) {
+                            reportHTML += `
+                            <div class="report-data-row">
+                                <div class="report-label">Organization:</div>
+                                <div class="report-value">${results.domain_info.organization}</div>
+                            </div>`;
+                        }
+                        
+                        if (results.domain_info.registrar) {
+                            reportHTML += `
+                            <div class="report-data-row">
+                                <div class="report-label">Registrar:</div>
+                                <div class="report-value">${results.domain_info.registrar}</div>
+                            </div>`;
+                        }
+                        
+                        if (results.domain_info.creation_date) {
+                            reportHTML += `
+                            <div class="report-data-row">
+                                <div class="report-label">Registration Date:</div>
+                                <div class="report-value">${results.domain_info.creation_date}</div>
+                            </div>`;
+                        }
+                        
+                        if (results.domain_info.expiration_date) {
+                            reportHTML += `
+                            <div class="report-data-row">
+                                <div class="report-label">Expiration Date:</div>
+                                <div class="report-value">${results.domain_info.expiration_date}</div>
+                            </div>`;
+                        }
+                        
+                        if (results.domain_info.last_updated) {
+                            reportHTML += `
+                            <div class="report-data-row">
+                                <div class="report-label">Last Updated:</div>
+                                <div class="report-value">${results.domain_info.last_updated}</div>
+                            </div>`;
+                        }
+                    }
+                }
+                
+                reportHTML += `</div>`;
+        
+                if (results.domain_data.mx_records && results.domain_data.mx_records.length > 0) {
+                    reportHTML += `
+                    <div class="report-section">
+                        <h3 class="report-section-title">MX Records</h3>
+                        <table class="mx-records-table">
+                            <thead>
+                                <tr>
+                                    <th>Priority</th>
+                                    <th>Hostname</th>
+                                    <th>IP Address</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+                    
+                    results.domain_data.mx_records.forEach(record => {
+                        reportHTML += `
+                                <tr>
+                                    <td>${record.preference}</td>
+                                    <td>${record.hostname}</td>
+                                    <td>${record.ip_address}</td>
+                                </tr>`;
+                    });
+                    
+                    reportHTML += `
+                            </tbody>
+                        </table>
+                    </div>`;
+                }
+                
+                if (results.domain_info && results.domain_info.name_servers && results.domain_info.name_servers.length > 0) {
+                    reportHTML += `
+                    <div class="report-section">
+                        <h3 class="report-section-title">Name Servers</h3>
+                        <ul class="name-servers-list">`;
+                        
+                    results.domain_info.name_servers.forEach(server => {
+                        reportHTML += `<li>${server}</li>`;
+                    });
+                    
+                    reportHTML += `
+                        </ul>
+                    </div>`;
+                }
+                if (results.spam_data) {
+                    reportHTML += `
+                    <div class="report-section">
+                        <h3 class="report-section-title">Spam Database Check</h3>
+                        <div class="report-data-row">
+                            <div class="report-label">Spam Score:</div>
+                            <div class="report-value">
+                                <span class="report-status ${results.spam_data.spam_score > 50 ? 'status-danger' : 
+                                                        results.spam_data.spam_score > 20 ? 'status-warning' : 'status-safe'}">
+                                    ${Math.round(results.spam_data.spam_score)}/100
+                                </span>
+                            </div>
+                        </div>`;
+
+                    if (results.spam_data.domain_listed) {
+                        reportHTML += `
+                        <div class="report-data-row">
+                            <div class="report-label">Domain Listed In:</div>
+                            <div class="report-value">
+                                <span class="report-status status-danger">
+                                    ${results.spam_data.domain_blacklists.join(', ')}
+                                </span>
+                            </div>
+                        </div>`;
+                    } else {
+                        reportHTML += `
+                        <div class="report-data-row">
+                            <div class="report-label">Domain Listed:</div>
+                            <div class="report-value">
+                                <span class="report-status status-safe">No</span>
+                            </div>
+                        </div>`;
+                    }
+
+                    if (results.spam_data.ip_results && results.spam_data.ip_results.length > 0) {
+                        const listedIPs = results.spam_data.ip_results.filter(ip => ip.is_listed);
+                        if (listedIPs.length > 0) {
+                            reportHTML += `
+                            <div class="report-data-row">
+                                <div class="report-label">Server IPs Listed:</div>
+                                <div class="report-value">`;
+                            
+                            listedIPs.forEach(ip => {
+                                reportHTML += `
+                                <div class="ip-listing">
+                                    <span class="ip-address">${ip.ip}</span> - Listed in: 
+                                    <span class="blacklist-names">${ip.blacklists.join(', ')}</span>
+                                </div>`;
+                            });
+                            
+                            reportHTML += `
+                                </div>
+                            </div>`;
+                        }
+                    }
+
+                    reportHTML += `</div>`;
+                }
+            }
+        
+            reportHTML += `
+                <div class="report-section">
+                    <h3 class="report-section-title">Safety Analysis</h3>
+                    <div class="report-data-row">
+                        <div class="report-label">Safety Rating:</div>
+                        <div class="report-value">
+                            <div>${results.safety_rating}/100</div>
+                            <div class="risk-meter">
+                                <div class="risk-indicator" style="left: ${results.safety_rating}%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="report-data-row">
+                        <div class="report-label">Status:</div>
+                        <div class="report-value">
+                            <span class="report-status ${results.status === 'Safe' ? 'status-safe' : 'status-danger'}">
+                                ${results.status}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="report-section">
+                    <h3 class="report-section-title">Analysis</h3>
+                    <div class="report-data-row">
+                        <div class="report-value" style="white-space: pre-line;">${results.comments}</div>
+                    </div>
+                </div>`;
+            
+            reportContent.innerHTML = reportHTML;
+            
+            document.getElementById('report-modal').style.display = 'block';
+        }
+
+        // Download PDF report
+        document.getElementById('download-report').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            if (!window.emailScanResults) {
+                alert('Please scan an email address first');
+                return;
+            }
+            
+            this.innerHTML = `
+                <svg class="animate-spin" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M12 6v6l4 2"></path>
+                </svg>
+            `;
+            
+            fetch('{% url "services:generate_pdf_report" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                },
+                body: JSON.stringify({
+                    report_data: window.emailScanResults
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                this.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                `;
+                
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+                
+                const downloadLink = document.createElement('a');
+                downloadLink.href = 'data:application/pdf;base64,' + data.pdf_data;
+                downloadLink.download = data.filename;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+            })
+            .catch(error => {
+                console.error('Error generating PDF:', error);
+                alert('Error generating PDF. Please try again.');
+                
+                this.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                `;
+            });
+        });
+
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        document.querySelector('.close-modal').addEventListener('click', function() {
+            document.getElementById('report-modal').style.display = 'none';
+        });
+
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('report-modal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Feedback form
+        document.getElementById('feedback-btn').addEventListener('click', function () {
+            const feedbackText = document.getElementById('feedback-text').value;
+            
+            if (feedbackText.trim() === '') {
+                alert('Please enter your feedback before submitting');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('feedback', feedbackText);
+            
+            fetch('{% url "services:feedback_submit" %}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast("Thank you for your feedback!", true);
+                    document.getElementById('feedback-text').value = '';
+                } else if (data.error === 'login_required') {
+                    showToast(data.message, false);
+                } else {
+                    showToast(data.error || 'Error submitting feedback', false);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('Error submitting feedback. Please try again.', false);
+            });
+        });
+
+        function showToast(message, isSuccess = true) {
+            const toast = document.createElement('div');
+            toast.className = `feedback-toast ${isSuccess ? 'success' : 'error'}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('show-toast');
+            }, 10);
+            
+            setTimeout(() => {
+                toast.classList.remove('show-toast');
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Email Analysis Report</title>
+    <style>
+        @page {
+            size: letter portrait;
+            margin: 1cm;
+        }
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            color: #333;
+            line-height: 1.4;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #00d2f7;
+            padding-bottom: 10px;
+        }
+        .logo {
+            margin-bottom: 10px;
+        }
+        h1 {
+            color: #0c2f38;
+            font-size: 24px;
+            margin: 0;
+        }
+        .timestamp {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .report-section {
+            margin-bottom: 20px;
+        }
+        .report-section-title {
+            color: #0c2f38;
+            font-size: 18px;
+            margin: 15px 0 10px 0;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        .report-data-row {
+            margin-bottom: 8px;
+        }
+        .report-label {
+            font-weight: bold;
+            display: inline-block;
+            width: 200px;
+            vertical-align: top;
+        }
+        .report-value {
+            display: inline-block;
+        }
+        .status-safe {
+            color: #4CAF50;
+            background-color: #E8F5E9;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        .status-warning {
+            color: #FFA000;
+            background-color: #FFF8E1;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        .status-danger {
+            color: #F44336;
+            background-color: #FFEBEE;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            font-size: 12px;
+        }
+        table th {
+            background-color: #f2f2f2;
+        }
+        ul {
+            margin: 0;
+            padding: 0 0 0 20px;
+        }
+        .risk-meter {
+            width: 100%;
+            height: 20px;
+            background: linear-gradient(to right, #F44336, #FFC107, #4CAF50);
+            border-radius: 10px;
+            position: relative;
+            margin-top: 5px;
+        }
+        .risk-indicator {
+            position: absolute;
+            top: -5px;
+            width: 8px;
+            height: 30px;
+            background-color: #333;
+            border-radius: 2px;
+        }
+        .footer {
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+            margin-top: 20px;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+        {% comment %} .profile-image {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .profile-image img {
+            border-radius: 50%;
+            max-width: 100px;
+            border: 2px solid #00d2f7;
+        } {% endcomment %}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Email Address Analysis Report</h1>
+        <div class="timestamp">Generated: {{ generated_date }}</div>
+    </div>
+    
+    <div class="report-section">
+        <h2 class="report-section-title">Profile Picture</h2>
+        {% if report.profile_picture_url %}
+        <div class="profile-picture-container">
+            <img src="{{ report.profile_picture_url }}" alt="Profile Picture" class="profile-picture">
+        </div>
+        {% else %}
+        <div class="report-data-row">
+            <span class="report-label">Profile Picture:</span>
+            <span class="report-value">None</span>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="report-section">
+        <h2 class="report-section-title">Basic Information</h2>
+        <div class="report-data-row">
+            <span class="report-label">Email Address:</span>
+            <span class="report-value">{{ report.email }}</span>
+        </div>
+        <div class="report-data-row">
+            <span class="report-label">Valid Format:</span>
+            <span class="report-value">
+                <span class="{% if report.is_valid %}status-safe{% else %}status-danger{% endif %}">
+                    {% if report.is_valid %}Yes{% else %}No{% endif %}
+                </span>
+            </span>
+        </div>
+        <div class="report-data-row">
+            <span class="report-label">Domain Type:</span>
+            <span class="report-value">{{ report.domain_type|title }}</span>
+        </div>
+        <div class="report-data-row">
+            <span class="report-label">Disposable Email:</span>
+            <span class="report-value">
+                <span class="{% if report.is_disposable %}status-danger{% else %}status-safe{% endif %}">
+                    {% if report.is_disposable %}Yes{% else %}No{% endif %}
+                </span>
+            </span>
+        </div>
+        {% if report.is_low_quality %}
+        <div class="report-data-row">
+            <span class="report-label">Low Quality Email:</span>
+            <span class="report-value">
+                <span class="status-warning">
+                    Yes (Contains multiple dots or plus signs)
+                </span>
+            </span>
+        </div>
+        {% endif %}
+    </div>
+    
+    {% if report.domain_data and report.domain_data.domain %}
+    <div class="report-section">
+        <h2 class="report-section-title">Domain Information</h2>
+        <div class="report-data-row">
+            <span class="report-label">Domain:</span>
+            <span class="report-value">{{ report.domain_data.domain }}</span>
+        </div>
+        <div class="report-data-row">
+            <span class="report-label">Can Receive Email:</span>
+            <span class="report-value">
+                <span class="{% if report.domain_data.can_receive_email %}status-safe{% else %}status-danger{% endif %}">
+                    {% if report.domain_data.can_receive_email %}Yes{% else %}No{% endif %}
+                </span>
+            </span>
+        </div>
+        
+        {% if report.domain_info %}
+            {% if report.domain_info.is_popular and report.domain_info.provider_info %}
+                {% with provider=report.domain_info.provider_info %}
+                <div class="report-data-row">
+                    <span class="report-label">Email Provider:</span>
+                    <span class="report-value">{{ provider.name }}</span>
+                </div>
+                <div class="report-data-row">
+                    <span class="report-label">Provider Company:</span>
+                    <span class="report-value">{{ provider.company }}</span>
+                </div>
+                <div class="report-data-row">
+                    <span class="report-label">Provider Founded:</span>
+                    <span class="report-value">{{ provider.founded }}</span>
+                </div>
+                <div class="report-data-row">
+                    <span class="report-label">Reputation:</span>
+                    <span class="report-value">
+                        <span class="{% if provider.reputation == 'Excellent' %}status-safe{% elif provider.reputation == 'Good' %}status-safe{% else %}status-warning{% endif %}">
+                            {{ provider.reputation }}
+                        </span>
+                    </span>
+                </div>
+                <div class="report-data-row">
+                    <span class="report-label">Description:</span>
+                    <span class="report-value">{{ provider.description }}</span>
+                </div>
+                {% endwith %}
+            {% else %}
+                {% if report.domain_info.organization %}
+                <div class="report-data-row">
+                    <span class="report-label">Organization:</span>
+                    <span class="report-value">{{ report.domain_info.organization }}</span>
+                </div>
+                {% endif %}
+                {% if report.domain_info.registrar %}
+                <div class="report-data-row">
+                    <span class="report-label">Registrar:</span>
+                    <span class="report-value">{{ report.domain_info.registrar }}</span>
+                </div>
+                {% endif %}
+                {% if report.domain_info.creation_date %}
+                <div class="report-data-row">
+                    <span class="report-label">Registration Date:</span>
+                    <span class="report-value">{{ report.domain_info.creation_date }}</span>
+                </div>
+                {% endif %}
+                {% if report.domain_info.expiration_date %}
+                <div class="report-data-row">
+                    <span class="report-label">Expiration Date:</span>
+                    <span class="report-value">{{ report.domain_info.expiration_date }}</span>
+                </div>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </div>
+    
+    {% if report.domain_data.mx_records and report.domain_data.mx_records|length > 0 %}
+    <div class="report-section">
+        <h2 class="report-section-title">MX Records</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Priority</th>
+                    <th>Hostname</th>
+                    <th>IP Address</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in report.domain_data.mx_records %}
+                <tr>
+                    <td>{{ record.preference }}</td>
+                    <td>{{ record.hostname }}</td>
+                    <td>{{ record.ip_address }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+    
+    {% if report.domain_info and report.domain_info.name_servers and report.domain_info.name_servers|length > 0 %}
+    <div class="report-section">
+        <h2 class="report-section-title">Name Servers</h2>
+        <ul>
+            {% for server in report.domain_info.name_servers %}
+            <li>{{ server }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    
+    {% if report.spam_data %}
+    <div class="report-section">
+        <h2 class="report-section-title">Spam Database Check</h2>
+        <div class="report-data-row">
+            <span class="report-label">Spam Score:</span>
+            <span class="report-value">
+                <span class="{% if report.spam_data.spam_score > 50 %}status-danger{% elif report.spam_data.spam_score > 20 %}status-warning{% else %}status-safe{% endif %}">
+                    {{ report.spam_data.spam_score|floatformat:0 }}/100
+                </span>
+            </span>
+        </div>
+        
+        {% if report.spam_data.domain_listed %}
+        <div class="report-data-row">
+            <span class="report-label">Domain Listed In:</span>
+            <span class="report-value status-danger">
+                {{ report.spam_data.domain_blacklists|join:", " }}
+            </span>
+        </div>
+        {% else %}
+        <div class="report-data-row">
+            <span class="report-label">Domain Listed:</span>
+            <span class="report-value status-safe">No</span>
+        </div>
+        {% endif %}
+        
+        {% if report.spam_data.ip_results and report.spam_data.ip_results|length > 0 %}
+            {% for ip_result in report.spam_data.ip_results %}
+                {% if ip_result.is_listed %}
+                <div class="report-data-row">
+                    <span class="report-label">IP {{ ip_result.ip }} Listed In:</span>
+                    <span class="report-value status-danger">
+                        {{ ip_result.blacklists|join:", " }}
+                    </span>
+                </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+    {% endif %}
+    {% endif %}
+    
+    <div class="report-section">
+        <h2 class="report-section-title">Safety Analysis</h2>
+        <div class="report-data-row">
+            <span class="report-label">Safety Rating:</span>
+            <span class="report-value">
+                {{ report.safety_rating }}/100
+                <div class="risk-meter">
+                    <div class="risk-indicator" style="left: {{ report.safety_rating }}%;"></div>
+                </div>
+            </span>
+        </div>
+        <div class="report-data-row">
+            <span class="report-label">Status:</span>
+            <span class="report-value">
+                <span class="{% if report.status == 'Safe' %}status-safe{% else %}status-danger{% endif %}">
+                    {{ report.status }}
+                </span>
+            </span>
+        </div>
+    </div>
+    
+    <div class="report-section">
+        <h2 class="report-section-title">Analysis</h2>
+        <div class="report-data-row">
+            <div class=report-value style=white-space:pre-line>{{ report.comments }}</div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>This report was generated by V.A.S.T. Email Scanner. All information is provided for informational purposes only.</p>
+        <p>© V.A.S.T. - Virus Analysis Scanning Tool</p>
+    </div>
+</body>
+</html>

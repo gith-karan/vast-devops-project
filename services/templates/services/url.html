@@ -1,0 +1,1028 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>URL Scanner - VAST</title>
+    <link rel="stylesheet" href="{% static 'styles/url.css' %}" />
+    <link rel="stylesheet" href="{% static 'styles/navbar.css' %}" />
+    <script src="{% static 'styles/navbar.js' %}" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <!-- navbar container -->
+    <div class="navbar-container">
+        <nav class="navbar">
+            <div class="brand-container">
+                <img src="{% static 'img/nav_logo.png' %}" alt="VAST Logo" class="logo-img">
+                <span class="brand-text">Virus Analysis Scanning Tool</span>
+            </div>
+
+            <div class="mobile-menu-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white">
+                    <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+                </svg>
+            </div>
+
+            <div class="nav-links">
+                <a href="{% url 'accounts:home' %}" class="nav-item">Home</a>
+
+                <div class="dropdown">
+                    <a href="{% url 'services:url_scanner' %}" class="nav-item active">Services ▾</a>
+                    <div class="dropdown-content services-dropdown">
+                        <a href="{% url 'services:email_scanner' %}" class="dropdown-item">
+                            <div class="dropdown-icon">
+                                <img src="https://api.iconify.design/mdi:email-outline.svg?color=%2300d2f7"
+                                    alt="Email Scanner" class="drop_icon_hover">
+                            </div>
+                            <span>E-Mail Scanner</span>
+                            <div class="arrow-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="#00d2f7" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="{% url 'services:url_scanner' %}" class="dropdown-item">
+                            <div class="dropdown-icon">
+                                <img src="https://api.iconify.design/mdi:web.svg?color=%2300d2f7" alt="URL Scanner"
+                                    class="drop_icon_hover">
+                            </div>
+                            <span>URL Scanner</span>
+                            <div class="arrow-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="#00d2f7" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="{% url 'services:file_scanner' %}" class="dropdown-item">
+                            <div class="dropdown-icon">
+                                <img src="https://api.iconify.design/mdi:file-document-outline.svg?color=%2300d2f7"
+                                    alt="File Scanner" class="drop_icon_hover">
+                            </div>
+                            <span>File Scanner</span>
+                            <div class="arrow-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="#00d2f7" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item">
+                            <div class="dropdown-icon">
+                                <img src="{% static 'img/Network Scanner Logo.png' %}" alt="Network Scanner" class="drop_icon_hover">
+                            </div>
+                            <span>Network Scanner</span>
+                            <div class="arrow-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="#00d2f7" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <a href="{% url 'accounts:about' %}" class="nav-item">About Us</a>
+                <a href="{% url 'accounts:contact' %}" class="nav-item">Contact us</a>
+
+                <div class="dropdown">
+                    <div class="user-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
+                        </svg>
+                    </div>
+                    <div class="dropdown-content">
+                        {% if is_guest %}
+                            <a href="{% url 'accounts:login' %}" class="dropdown-item">Log In / Sign Up</a>
+                        {% else %}
+                            <a href="#" class="dropdown-item username-display">{{ username }}</a>
+                            {% if joined_date %}
+                            <a href="#" class="dropdown-item joined-date">Joined: {{ joined_date|date:"M d, Y" }}</a>
+                            {% endif %}
+                            <div class="dropdown-divider"></div>
+                            <a href="{% url 'accounts:logout' %}" class="dropdown-item">Log Out</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <!-- URL Scanner Section -->
+    <section class="url-scanner-section">
+        <h1 class="url-scanner-title">URL Scanner</h1>
+        {% csrf_token %}
+        <div class="url-scanner-container">
+            <!-- Scanner Input Form -->
+            <div class="scanner-input-container">
+                <input type="text" class="scanner-input" placeholder="www.example.com" id="url-input">
+                <button class="submit-btn" id="scan-btn">SCAN</button>
+            </div>
+
+            <!-- Results Section -->
+            <div class="result-container">
+                <div class="result-row">
+                    <div class="result-label">URL :</div>
+                    <div class="result-value" id="result-url">-</div>
+                </div>
+                <div class="result-row" style="border-bottom: none;">
+                    <div class="result-label">Status:</div>
+                    <div class="result-value" id="result-status">-</div>
+                </div>
+                <div>
+                    <a href="#" class="view-report-btn" id="view-report">
+                        View Detailed Report
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- FAQ Section -->
+            <div class="faq-section">
+                <h2 class="faq-title">FAQs about URL Scanner</h2>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Why is it important to check URL safety?</span>
+                        <span class="faq-toggle">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Checking URL safety is crucial because malicious websites can contain phishing attempts,
+                            malware, or other security threats. By scanning a URL before visiting it, you can protect
+                            your personal information, prevent identity theft, and avoid potential damage to your device
+                            or network.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Can I check a shortened URL link?</span>
+                        <span class="faq-toggle">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes, our URL Scanner can analyze shortened URLs (like bit.ly, tinyurl, etc.) by following the
+                            redirects and checking the final destination. This is particularly important as shortened
+                            URLs can hide the actual destination, potentially leading to malicious websites.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Why status is showing None</span>
+                        <span class="faq-toggle">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>If the status is showing "None", it means you haven't submitted a URL for scanning yet, or
+                            there might be a temporary issue with our scanning service. Please try submitting a URL or
+                            refresh the page. If the problem persists, please contact our support team.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Can I check the safety of any website with this tool?</span>
+                        <span class="faq-toggle">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes, you can use our URL Scanner to check any publicly accessible website. Our tool analyzes
+                            the URL for potential security threats, including malware, phishing attempts, suspicious
+                            redirects, and harmful content. However, please note that our scanner might not be able to
+                            detect all types of threats, especially newly emerged ones.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" style="border-bottom: none;">
+                    <div class="faq-question">
+                        <span>Why you should choose V.A.S.T. URL Scanner?</span>
+                        <span class="faq-toggle">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>V.A.S.T. URL Scanner offers superior protection with its advanced threat detection
+                            algorithms, comprehensive database of known malicious sites, and real-time scanning
+                            capabilities. Our tool doesn't just check if a URL is safe—it provides detailed analysis of
+                            various security aspects, including domain reputation, SSL certificate validity, and content
+                            analysis. We prioritize speed, accuracy, and user privacy in all our security tools.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feedback Section -->
+            <div class="feedback-section">
+                <h3 class="feedback-title">Feedback</h3>
+                <textarea class="feedback-input" id="feedback-text"
+                    placeholder="Your comments and feedback help us to improve."></textarea>
+                <div class="feedback-submit">
+                    <button class="feedback-btn" id="feedback-btn">
+                        Submit
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </button>
+                </div>
+                <div class="feedback-message"></div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Detailed Report Modal -->
+    <div id="report-modal" class="report-modal">
+        <div class="report-modal-content">
+            <div class="report-modal-header">
+                <h2>URL Analysis Report</h2>
+                <span class="close-modal">&times;</span>
+                <a href="#" id="download-report" class="download-report">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                </a>
+            </div>
+            <div class="report-modal-body">
+                <div id="report-content">
+                    <!-- Report content will be here-->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <a href="{% url 'accounts:contact' %}" class="contact-btn">Contact Us For More Details</a>
+            <div class="social-section">
+                <div class="social-title">Social Media Links</div>
+                <div class="social-links">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy;VAST All right reserved
+        </div>
+    </footer>
+
+    <script>
+       function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+        
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                question.parentElement.classList.toggle('active');
+            });
+        });
+
+        // URL scanning functionality
+        document.getElementById('scan-btn').addEventListener('click', function () {
+            const urlInput = document.getElementById('url-input').value;
+            const originalButtonText = this.innerHTML;
+        
+            this.innerHTML = 'Scanning...';
+            this.disabled = true;
+            
+            document.getElementById('result-url').textContent = urlInput || '-';
+            
+            const resultStatus = document.getElementById('result-status');
+            resultStatus.textContent = 'Scanning...';
+            resultStatus.style.color = '#FFA500'; 
+            
+            const formData = new FormData();
+            formData.append('url', urlInput);
+            
+            fetch('{% url "services:validate_url" %}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Received data:", data); 
+                
+                this.innerHTML = originalButtonText;
+                this.disabled = false;
+                
+                if (data.error) {
+                    resultStatus.textContent = data.error;
+                    resultStatus.style.color = '#FF5252'; 
+                    return;
+                }
+                
+                if (!data.is_valid_domain) {
+                    resultStatus.textContent = "Invalid Domain";
+                    resultStatus.style.color = '#FF5252'; 
+                    
+                    window.urlScanResults = data;
+                    return;
+                }
+                
+                if (data.status) {
+                    resultStatus.textContent = data.status;
+                    
+                    switch(data.status) {
+                        case "Safe":
+                            resultStatus.style.color = '#4CAF50'; 
+                            break;
+                        case "Mostly Safe":
+                            resultStatus.style.color = '#FFC107'; 
+                            break;
+                        case "Exercise Caution":
+                            resultStatus.style.color = '#FF9800'; 
+                            break;
+                        case "Potentially Unsafe":
+                        case "Invalid Domain":
+                            resultStatus.style.color = '#FF5252'; 
+                            break;
+                        default:
+                            resultStatus.style.color = '#FFA500'; 
+                    }
+                } else {
+                    let statusText;
+                    if (data.safety_rating >= 80) {
+                        statusText = "Safe";
+                        resultStatus.style.color = '#4CAF50'; 
+                    } else if (data.safety_rating >= 60) {
+                        statusText = "Mostly Safe";
+                        resultStatus.style.color = '#FFC107'; 
+                    } else if (data.safety_rating >= 40) {
+                        statusText = "Exercise Caution";
+                        resultStatus.style.color = '#FF9800'; 
+                    } else {
+                        statusText = "Potentially Unsafe";
+                        resultStatus.style.color = '#FF5252'; 
+                    }
+                    
+                    resultStatus.textContent = statusText;
+                }
+                
+                window.urlScanResults = data;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                
+                this.innerHTML = originalButtonText;
+                this.disabled = false;
+                
+                resultStatus.textContent = 'Error processing request';
+                resultStatus.style.color = '#FF5252'; 
+            });
+        });
+
+        // View report button
+        document.getElementById('view-report').addEventListener('click', function (e) {
+            e.preventDefault();
+            
+            if (!window.urlScanResults) {
+                alert('Please scan a URL first');
+                return;
+            }
+            
+            displayDetailedReport(window.urlScanResults);
+            
+            document.getElementById('report-modal').style.display = 'block';
+        });
+
+        function displayDetailedReport(results) {
+            const reportContent = document.getElementById('report-content');
+            
+            let reportHTML = `
+                <div class="report-section">
+                    <h3 class="report-section-title">Basic Information</h3>
+                    <div class="report-data-row">
+                        <div class="report-label">URL:</div>
+                        <div class="report-value">${results.url}</div>
+                    </div>`;
+                    
+            reportHTML += `
+                <div class="report-data-row">
+                    <div class="report-label">Domain:</div>
+                    <div class="report-value">${extractDomain(results.url)}</div>
+                </div>
+                <div class="report-data-row">
+                    <div class="report-label">Domain Status:</div>
+                    <div class="report-value">
+                        <span class="report-status ${results.is_valid_domain ? 'status-safe' : 'status-danger'}">
+                            ${results.is_valid_domain ? 'Valid' : 'Invalid/Unreachable'}
+                        </span>
+                    </div>
+                </div>`;
+            
+            if (results.is_valid_domain) {
+                reportHTML += `
+                    <div class="report-data-row">
+                        <div class="report-label">Shortlink:</div>
+                        <div class="report-value">
+                            <span class="report-status ${results.is_shortened ? 'status-warning' : 'status-safe'}">
+                                ${results.is_shortened ? 'Yes - Destination may be masked' : 'No'}
+                            </span>
+                        </div>
+                    </div>`;
+
+                reportHTML += `
+                <div class="report-data-row">
+                    <div class="report-label">IP Address:</div>
+                    <div class="report-value">${results.ip_address || 'Unknown'}</div>
+                </div>`;
+
+                reportHTML += `
+                <div class="report-data-row">
+                    <div class="report-label">IP Range:</div>
+                    <div class="report-value">${results.ip_range || 'Unknown'}</div>
+                </div>`;
+
+                reportHTML += `
+                <div class="report-data-row">
+                    <div class="report-label">Hosting Provider:</div>
+                    <div class="report-value">${results.hosting_provider || 'Unknown'}</div>
+                </div>`;
+            
+            reportHTML += `
+                <div class="report-data-row">
+                    <div class="report-label">Server:</div>
+                    <div class="report-value">${results.server || 'Unknown'}</div>
+                </div>`;
+                
+                if (results.final_url && results.final_url !== results.url) {
+                    reportHTML += `
+                        <div class="report-data-row">
+                            <div class="report-label">Final URL:</div>
+                            <div class="report-value">${results.final_url}</div>
+                        </div>
+                        <div class="report-data-row">
+                            <div class="report-label">Redirects:</div>
+                            <div class="report-value">
+                                <span class="report-status ${results.is_shortened ? 'status-warning' : 'status-safe'}">
+                                    ${results.is_shortened ? 'Yes (URL shortener detected)' : 'Yes'}
+                                </span>
+                            </div>
+                        </div>`;
+                }
+            }
+            
+            reportHTML += `</div>`;
+            
+            reportHTML += `
+                <div class="report-section">
+                    <h3 class="report-section-title">Safety Analysis</h3>
+                    <div class="report-data-row">
+                        <div class="report-label">Safety Rating:</div>
+                        <div class="report-value">
+                            <div class="risk-meter">
+                                <div class="risk-indicator" style="left: ${results.safety_rating}%"></div>
+                            </div>
+                            ${results.safety_rating}/100
+                        </div>
+                    </div>
+                    <div class="report-data-row">
+                        <div class="report-label">Status:</div>
+                        <div class="report-value">
+                            <span class="report-status ${!results.is_valid_domain ? 'status-danger' : 
+                                                        results.safety_rating >= 70 ? 'status-safe' : 
+                                                        results.safety_rating >= 40 ? 'status-warning' : 
+                                                        'status-danger'}">
+                                ${!results.is_valid_domain ? 'Invalid Domain' : getSafetyText(results.safety_rating)}
+                            </span>
+                        </div>
+                    </div>`;
+                    
+            if (results.is_valid_domain) {
+                reportHTML += `
+                    <div class="report-data-row">
+                        <div class="report-label">SSL Certificate:</div>
+                        <div class="report-value">
+                            <span class="report-status ${results.ssl_valid ? 'status-safe' : 'status-danger'}">
+                                ${results.ssl_valid ? 'Valid' : 'Invalid or Missing'}
+                            </span>
+                        </div>
+                    </div>`;
+            }
+            
+            reportHTML += `
+                    <div class="report-data-row">
+                        <div class="report-label">Domain Age:</div>
+                        <div class="report-value">${results.domain_age || 'Unknown'}</div>
+                    </div>
+                </div>`;
+
+            if (results.discovered_content) {
+                const links = results.discovered_content.links || [];
+                const scripts = results.discovered_content.scripts || [];
+                const iframes = results.discovered_content.iframes || [];
+                const embeddedObjects = results.discovered_content.embedded_objects || [];
+                
+                reportHTML += `
+                <div class="report-section">
+                    <h3 class="report-section-title">Additional Information</h3>`;
+                    
+                reportHTML += `
+                    <div class="collapsible-container">
+                        <div id="links-header" class="collapsible-header" onclick="toggleCollapsible('links')">
+                            <span class="collapsible-title">Links found (${links.length})</span>
+                            <span class="collapsible-arrow">▼</span>
+                        </div>
+                        <div id="links-content" class="collapsible-content">
+                            <div class="collapsible-inner">`;
+                        
+                if (links.length > 0) {
+                    reportHTML += `<ul class="discovered-list">`;
+                    links.forEach(link => {
+                        reportHTML += `
+                            <li>
+                                <a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.text || link.url}</a>
+                            </li>`;
+                    });
+                    reportHTML += `</ul>`;
+                } else {
+                    reportHTML += `<p class="empty-message">No links found.</p>`;
+                }
+                
+                reportHTML += `
+                            </div>
+                        </div>
+                    </div>`;
+                    
+                reportHTML += `
+                    <div class="collapsible-container">
+                        <div id="scripts-header" class="collapsible-header" onclick="toggleCollapsible('scripts')">
+                            <span class="collapsible-title">JavaScripts included (${scripts.length})</span>
+                            <span class="collapsible-arrow">▼</span>
+                        </div>
+                        <div id="scripts-content" class="collapsible-content">
+                            <div class="collapsible-inner">`;
+                        
+                if (scripts.length > 0) {
+                    reportHTML += `<ul class="discovered-list">`;
+                    scripts.forEach(script => {
+                        reportHTML += `
+                            <li>
+                                <a href="${script.url}" target="_blank" rel="noopener noreferrer">${script.url}</a>
+                                ${script.type ? `<span class="script-type">(${script.type})</span>` : ''}
+                            </li>`;
+                    });
+                    reportHTML += `</ul>`;
+                } else {
+                    reportHTML += `<p class="empty-message">No scripts found.</p>`;
+                }
+                
+                reportHTML += `
+                            </div>
+                        </div>
+                    </div>`;
+                    
+                reportHTML += `
+                    <div class="collapsible-container">
+                        <div id="iframes-header" class="collapsible-header" onclick="toggleCollapsible('iframes')">
+                            <span class="collapsible-title">iFrames included (${iframes.length})</span>
+                            <span class="collapsible-arrow">▼</span>
+                        </div>
+                        <div id="iframes-content" class="collapsible-content">
+                            <div class="collapsible-inner">`;
+                        
+                if (iframes.length > 0) {
+                    reportHTML += `<ul class="discovered-list">`;
+                    iframes.forEach(iframe => {
+                        reportHTML += `
+                            <li>
+                                <a href="${iframe.url}" target="_blank" rel="noopener noreferrer">${iframe.url}</a>
+                                ${iframe.title ? `<span class="iframe-title">(${iframe.title})</span>` : ''}
+                            </li>`;
+                    });
+                    reportHTML += `</ul>`;
+                } else {
+                    reportHTML += `<p class="empty-message">No iframes found.</p>`;
+                }
+                
+                reportHTML += `
+                            </div>
+                        </div>
+                    </div>`;
+                    
+                reportHTML += `
+                    <div class="collapsible-container">
+                        <div id="objects-header" class="collapsible-header" onclick="toggleCollapsible('objects')">
+                            <span class="collapsible-title">Embedded objects included (${embeddedObjects.length})</span>
+                            <span class="collapsible-arrow">▼</span>
+                        </div>
+                        <div id="objects-content" class="collapsible-content">
+                            <div class="collapsible-inner">`;
+                        
+                if (embeddedObjects.length > 0) {
+                    reportHTML += `<ul class="discovered-list">`;
+                    embeddedObjects.forEach(obj => {
+                        reportHTML += `
+                            <li>
+                                <a href="${obj.url}" target="_blank" rel="noopener noreferrer">${obj.url}</a>
+                                ${obj.type ? `<span class="object-type">(${obj.type})</span>` : ''}
+                            </li>`;
+                    });
+                    reportHTML += `</ul>`;
+                } else {
+                    reportHTML += `<p class="empty-message">No embedded objects found.</p>`;
+                }
+                
+                reportHTML += `
+                            </div>
+                        </div>
+                    </div>`;
+                
+                reportHTML += `</div>`;
+            }
+
+            const defacementInfo = results.defacement_info || {};
+            const phishingInfo = results.phishing_info || {};
+            const maliciousInfo = results.malicious_info || {};
+            
+            const isDefaced = defacementInfo.defaced === true;
+            const isPhishing = phishingInfo.is_phishing === true;
+            const isMalicious = maliciousInfo.is_malicious === true;
+            
+            if (isDefaced || isPhishing || isMalicious) {
+                reportHTML += `
+                <div class="report-section">
+                    <h3 class="report-section-title">Security Threats Detected</h3>`;
+                    
+                if (isDefaced) {
+                    reportHTML += `
+                    <div class="collapsible-container">
+                        <div id="defacement-header" class="collapsible-header" onclick="toggleCollapsible('defacement')">
+                            <span class="collapsible-title">
+                                <span class="security-alert">⚠️ Defacement Found</span>
+                            </span>
+                            <span class="collapsible-arrow">▼</span>
+                        </div>
+                        <div id="defacement-content" class="collapsible-content">
+                            <div class="collapsible-inner">
+                                <div class="threat-details">
+                                    <div class="threat-row">
+                                        <div class="threat-label">Confidence:</div>
+                                        <div class="threat-value">${defacementInfo.confidence}%</div>
+                                    </div>
+                                    <div class="threat-row">
+                                        <div class="threat-label">Evidence:</div>
+                                        <div class="threat-value">${defacementInfo.evidence || 'None'}</div>
+                                    </div>
+                                    <div class="threat-row">
+                                        <div class="threat-label">Defacement Content:</div>
+                                        <div class="threat-value code-block">${defacementInfo.defacement_text || 'Not available'}</div>
+                                    </div>
+                                    <div class="threat-info">
+                                        <p>Website defacement is an attack where the visual appearance of a site is changed by a malicious actor. 
+                                        This often indicates that the website has been compromised.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                }
+                
+                if (isPhishing) {
+                    reportHTML += `
+                    <div class="collapsible-container">
+                        <div id="phishing-header" class="collapsible-header" onclick="toggleCollapsible('phishing')">
+                            <span class="collapsible-title">
+                                <span class="security-alert">⚠️ Phishing Page Detected</span>
+                            </span>
+                            <span class="collapsible-arrow">▼</span>
+                        </div>
+                        <div id="phishing-content" class="collapsible-content">
+                            <div class="collapsible-inner">
+                                <div class="threat-details">
+                                    <div class="threat-row">
+                                        <div class="threat-label">Confidence:</div>
+                                        <div class="threat-value">${phishingInfo.confidence}%</div>
+                                    </div>
+                                    <div class="threat-row">
+                                        <div class="threat-label">Evidence:</div>
+                                        <div class="threat-value">${phishingInfo.evidence || 'None'}</div>
+                                    </div>
+                                    <div class="threat-row">
+                                        <div class="threat-label">Target:</div>
+                                        <div class="threat-value">${phishingInfo.phishing_target || 'Unknown'}</div>
+                                    </div>
+                                    <div class="threat-info">
+                                        <p>This website appears to be a phishing page designed to steal credentials or personal information. 
+                                        Do not enter any personal information on this site.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                }
+                
+                if (isMalicious) {
+                    reportHTML += `
+                    <div class="collapsible-container">
+                        <div id="malicious-header" class="collapsible-header" onclick="toggleCollapsible('malicious')">
+                            <span class="collapsible-title">
+                                <span class="security-alert">⚠️ Malicious Content Detected</span>
+                            </span>
+                            <span class="collapsible-arrow">▼</span>
+                        </div>
+                        <div id="malicious-content" class="collapsible-content">
+                            <div class="collapsible-inner">
+                                <div class="threat-details">
+                                    <div class="threat-row">
+                                        <div class="threat-label">Confidence:</div>
+                                        <div class="threat-value">${maliciousInfo.confidence}%</div>
+                                    </div>
+                                    <div class="threat-row">
+                                        <div class="threat-label">Type:</div>
+                                        <div class="threat-value">${maliciousInfo.malicious_type || 'Unknown'}</div>
+                                    </div>
+                                    <div class="threat-row">
+                                        <div class="threat-label">Evidence:</div>
+                                        <div class="threat-value">${maliciousInfo.evidence || 'None'}</div>
+                                    </div>
+                                    <div class="threat-row">
+                                        <div class="threat-label">Malicious Code:</div>
+                                        <div class="threat-value code-block">${maliciousInfo.malicious_content || 'Not available'}</div>
+                                    </div>
+                                    <div class="threat-info">
+                                        <p>This website contains potentially malicious content that could harm your device or steal information. 
+                                        We recommend avoiding this site.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                }
+                
+                reportHTML += `</div>`;
+            }
+                
+            if (results.warnings && results.warnings.length > 0) {
+                reportHTML += `
+                <div class="report-section">
+                    <h3 class="report-section-title">Warnings</h3>
+                    <ul>`;
+                    
+                results.warnings.forEach(warning => {
+                    reportHTML += `<li>${warning}</li>`;
+                });
+                
+                reportHTML += `
+                    </ul>
+                </div>`;
+            }
+            
+            if (results.is_valid_domain && results.redirects && results.redirects.length > 1) {
+                reportHTML += `
+                <div class="report-section">
+                    <h3 class="report-section-title">Redirect Chain</h3>
+                    <ol>`;
+                    
+                results.redirects.forEach(redirect => {
+                    reportHTML += `<li>${redirect.url}${redirect.status_code ? ' (Status: ' + redirect.status_code + ')' : ''}</li>`;
+                });
+                
+                reportHTML += `
+                    </ol>
+                </div>`;
+            }
+            
+            if (results.is_valid_domain && results.tracker_summary && results.tracker_summary.length > 0) {
+                reportHTML += `
+                <div class="report-section">
+                    <h3 class="report-section-title">Tracking Information</h3>
+                    <div class="report-data-row">
+                        <div class="report-label">Trackers Detected:</div>
+                        <div class="report-value">${results.trackers_count}</div>
+                    </div>
+                    <div class="report-data-row">
+                        <div class="report-label">Types:</div>
+                        <div class="report-value">
+                            <ul>`;
+                                
+                results.tracker_summary.forEach(tracker => {
+                    reportHTML += `<li>${tracker}</li>`;
+                });
+                
+                reportHTML += `
+                            </ul>
+                        </div>
+                    </div>
+                </div>`;
+            }
+            
+            if (results.comments) {
+                reportHTML += `
+                <div class="report-section">
+                    <h3 class="report-section-title">Analysis</h3>
+                    <div class="report-data-row">
+                        <div class="report-value" style="white-space: pre-line">${results.comments}</div>
+                    </div>
+                </div>`;
+            }
+            
+            reportContent.innerHTML = reportHTML;
+
+            initCollapsibles();
+
+        }
+
+        function toggleCollapsible(id) {
+            const header = document.getElementById(id + '-header');
+            const content = document.getElementById(id + '-content');
+            
+            header.classList.toggle('active');
+            content.classList.toggle('active');
+            
+            const arrow = header.querySelector('.collapsible-arrow');
+            if (content.classList.contains('active')) {
+                arrow.innerHTML = '▲';
+            } else {
+                arrow.innerHTML = '▼';
+            }
+        }
+        
+        function initCollapsibles() {
+            const collapsibles = document.querySelectorAll('.collapsible-container');
+            collapsibles.forEach(collapsible => {
+                const header = collapsible.querySelector('.collapsible-header');
+                const content = collapsible.querySelector('.collapsible-content');
+                const arrow = header.querySelector('.collapsible-arrow');
+                
+                content.classList.remove('active');
+                arrow.innerHTML = '▼';
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            initCollapsibles();
+        });
+
+        // Download PDF report
+        document.getElementById('download-report').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            if (!window.urlScanResults) {
+                alert('Please scan a URL first');
+                return;
+            }
+            
+            const url_id = window.urlScanResults.url_id;
+            if (!url_id) {
+                alert('URL ID not found. Please scan again.');
+                return;
+            }
+            
+            window.open(`{% url 'services:generate_url_pdf' %}?url_id=${url_id}`, '_blank');
+        });
+
+        function extractDomain(url) {
+            let domain;
+            if (url.indexOf("://") > -1) {
+                domain = url.split('/')[2];
+            } else {
+                domain = url.split('/')[0];
+            }
+            domain = domain.split(':')[0];
+            return domain;
+        }
+        
+        function getSafetyColor(rating) {
+            if (rating >= 80) return '#4CAF50';
+            if (rating >= 60) return '#FFC107';
+            if (rating >= 40) return '#FF9800';
+            return '#F44336';
+        }
+        
+        function getSafetyText(rating) {
+            if (rating >= 80) return 'Safe';
+            if (rating >= 60) return 'Mostly Safe';
+            if (rating >= 40) return 'Exercise Caution';
+            return 'Potentially Unsafe';
+        }
+
+        document.querySelector('.close-modal').addEventListener('click', function() {
+            document.getElementById('report-modal').style.display = 'none';
+        });
+
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('report-modal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Feedback form
+        document.getElementById('feedback-btn').addEventListener('click', function () {
+            const feedbackText = document.getElementById('feedback-text').value;
+            
+            if (feedbackText.trim() === '') {
+                alert('Please enter your feedback before submitting');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('feedback', feedbackText);
+            
+            fetch('{% url "services:feedback_submit" %}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast("Thank you for your feedback!", true);
+                    document.getElementById('feedback-text').value = '';
+                } else if (data.error === 'login_required') {
+                    showToast(data.message, false);
+                } else {
+                    showToast(data.error || 'Error submitting feedback', false);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('Error submitting feedback. Please try again.', false);
+            });
+        });
+
+        function showToast(message, isSuccess = true) {
+            const toast = document.createElement('div');
+            toast.className = `feedback-toast ${isSuccess ? 'success' : 'error'}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('show-toast');
+            }, 10);
+            
+            setTimeout(() => {
+                toast.classList.remove('show-toast');
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }
+        
+    </script>
+</body>
+</html>

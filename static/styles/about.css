@@ -1,0 +1,320 @@
+ /* <style> */
+        /* General Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto Mono', monospace;
+            /* background-color: #0a1c1e; */
+            background-color: #071f25;
+            color: #fff;
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: url('wave-bg.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        a {
+            text-decoration: none;
+            color: #fff;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-weight: bold;
+        }
+
+        .highlight {
+            color: #00d2f7;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            /* background: rgba(16, 43, 45, 0.8); */
+            background: rgba(13, 47, 55, 0.8);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #00d2f741;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            /* background: rgba(19, 55, 57, 0.8); */
+            background: rgba(15, 59, 69, 0.8);
+        }
+
+        /* Hero Section - Matching the image design */
+        .hero {
+            display: flex;
+            justify-content: center;
+            padding: 4rem 2rem;
+        }
+
+        .hero-container {
+            position: relative;
+            max-width: 900px;
+            width: 100%;
+            border: 1px solid rgba(0, 210, 247, 0.3);
+            border-radius: 10px;
+            padding: 2rem 2rem 2rem 8rem;
+            /* background-color: #102b2d; */
+            background-color: #0c2f38;
+            backdrop-filter: blur(5px);
+            margin-top: 100px;
+        }
+
+        .shield-logo {
+            position: absolute;
+            left: -85px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 180px;
+            height: 180px;
+        }
+
+        .hero-title {
+            font-size: 3.0rem;
+            color: #00d2f7;
+            line-height: 1.2;
+            align-items: center;
+        }
+
+        /* Content Section Styles - New additions */
+        .content-section {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            color: #ffffff;
+            font-family: 'Roboto Mono', monospace;
+            margin-bottom: 4rem;
+        }
+
+        .mission-text {
+            margin-bottom: 2.5rem;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .section-title {
+            color: #00d2f7;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .section-content {
+            margin-bottom: 2.5rem;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        /* already in section content */
+        /* .products-section {
+            margin-top: 2.5rem;
+        } */
+
+        /* to add gap between services items */
+        .service-item {
+            margin-bottom: 0.3rem;
+        }
+
+        .service-title {
+            color: white;
+            font-weight: 600;
+            display: inline;
+            font-size: 0.95rem;
+        }
+
+        .service-description {
+            display: inline;
+            font-size: 0.95rem;
+        }
+
+        /* Footer */
+        footer {
+            width: 100%;
+            /* background: rgba(16, 43, 45, 0.8); */
+            background: rgba(13, 47, 55, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 2rem;
+            margin-top: 2rem;
+        }
+
+        .footer-content {
+            max-width: auto;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .contact-btn {
+            background-color: transparent;
+            color: #fff;
+            padding: 0.8rem 1.5rem;
+            border: 1px solid #00d2f7;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Roboto Mono', monospace;
+            white-space: nowrap;
+        }
+
+        .contact-btn:hover {
+            background-color: #00d2f7;
+            /* color: #102b2d; */
+            color: #0c2f38;
+        }
+
+        .social-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .social-title {
+            color: #fff;
+            margin-bottom: 0.5rem;
+            font-size: 1.05rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 35px;
+            height: 35px;
+            background-color: rgba(0, 210, 247, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background-color: #00d2f7;
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: auto;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .hero-container {
+                padding: 6rem 1.5rem 1.5rem;
+                text-align: center;
+            }
+
+            .shield-logo {
+                left: 50%;
+                top: -60px;
+                transform: translateX(-50%);
+            }
+
+            .hero-title {
+                font-size: 2rem;
+                margin-top: 30px;
+            }
+
+            .footer-content {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 1.5rem;
+                justify-content: space-between;
+            }
+
+            .social-section {
+                align-items: flex-end;
+            }
+
+            .content-section {
+                padding: 0 1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero-title {
+                font-size: 1.8rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            footer {
+                padding: 1.2rem;
+            }
+        }
+    
+        /* Username display in dropdown */
+        .username-display {
+            font-weight: bold;
+            color: #00d2f7 !important;
+        }
+
+        .joined-date {
+            font-size: 0.8em;
+            color: #ccc !important;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            /* background-color: #0a1c1e; */
+            background-color: #071f25;
+            color: #fff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: #fff;
+        }
+
+        h1,
+        h2 {
+            font-weight: bold;
+        }
+
+        .highlight {
+            color: #00d2f7;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+    /* </style> */

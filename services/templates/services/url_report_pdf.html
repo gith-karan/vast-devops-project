@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>URL Analysis Report</title>
+    <style>
+        @page {
+            size: letter portrait;
+            margin: 1cm;
+        }
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            color: #333;
+            line-height: 1.4;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #00d2f7;
+            padding-bottom: 10px;
+        }
+        .logo {
+            margin-bottom: 10px;
+        }
+        h1 {
+            color: #0c2f38;
+            font-size: 24px;
+            margin: 0;
+        }
+        .timestamp {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .report-section {
+            margin-bottom: 20px;
+        }
+        .report-section-title {
+            color: #0c2f38;
+            font-size: 18px;
+            margin: 15px 0 10px 0;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        .report-data-row {
+            margin-bottom: 8px;
+        }
+        .report-label {
+            font-weight: bold;
+            display: inline-block;
+            width: 200px;
+            vertical-align: top;
+        }
+        .report-value {
+            display: inline-block;
+        }
+        .status-safe {
+            color: #4CAF50;
+            background-color: #E8F5E9;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        .status-warning {
+            color: #FFA000;
+            background-color: #FFF8E1;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        .status-danger {
+            color: #F44336;
+            background-color: #FFEBEE;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            font-size: 12px;
+        }
+        table th {
+            background-color: #f2f2f2;
+        }
+        ul {
+            margin: 0;
+            padding: 0 0 0 20px;
+        }
+        .risk-meter {
+            width: 100%;
+            height: 20px;
+            background: linear-gradient(to right, #F44336, #FFC107, #4CAF50);
+            border-radius: 10px;
+            position: relative;
+            margin-top: 5px;
+        }
+        .risk-indicator {
+            position: absolute;
+            top: -5px;
+            width: 8px;
+            height: 30px;
+            background-color: #333;
+            border-radius: 2px;
+        }
+        .footer {
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+            margin-top: 20px;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+        .warning-item {
+            background-color: #FFF8E1;
+            border-left: 4px solid #FFA000;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+        }
+        .danger-item {
+            background-color: #FFEBEE;
+            border-left: 4px solid #F44336;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>URL Security Analysis Report</h1>
+        <div class="timestamp">Generated: {{ generated_date }}</div>
+    </div>
+    
+    <div class="report-section">
+        <h2 class="report-section-title">URL Information</h2>
+        <div class="report-data-row">
+            <span class="report-label">Original URL:</span>
+            <span class="report-value">{{ report.url }}</span>
+        </div>
+        
+        {% if report.is_valid_domain %}
+            {% if report.url != report.final_url %}
+            <div class="report-data-row">
+                <span class="report-label">Final URL:</span>
+                <span class="report-value">{{ report.final_url }}</span>
+            </div>
+            {% endif %}
+            
+            <div class="report-data-row">
+                <span class="report-label">Domain:</span>
+                <span class="report-value">{{ report.domain }}</span>
+            </div>
+            
+            <div class="report-data-row">
+                <span class="report-label">Scan Date:</span>
+                <span class="report-value">{{ report.scan_date }}</span>
+            </div>
+            
+            <div class="report-data-row">
+                <span class="report-label">Shortlink:</span>
+                {% if report.is_shortlink %}
+                <span class="report-value">
+                    <span class="status-warning">Yes - Destination may be masked</span>
+                </span>
+                {% else %}
+                <span class="report-value">
+                    <span class="status-safe">No</span>
+                </span>
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="report-data-row">
+                <span class="report-label">Domain:</span>
+                <span class="report-value">{{ report.domain }}</span>
+            </div>
+            
+            <div class="report-data-row">
+                <span class="report-label">Status:</span>
+                <span class="report-value">
+                    <span class="status-danger">Invalid Domain</span>
+                </span>
+            </div>
+            
+            <div class="report-data-row">
+                <span class="report-label">Scan Date:</span>
+                <span class="report-value">{{ report.scan_date }}</span>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="report-section">
+        <h2 class="report-section-title">Safety Analysis</h2>
+        
+        <div class="report-data-row">
+            <span class="report-label">Safety Rating:</span>
+            <span class="report-value">
+                {{ report.safety_rating }}/100
+                <div class="risk-meter">
+                    <div class="risk-indicator" style="left: {{ report.safety_rating }}%;"></div>
+                </div>
+            </span>
+        </div>
+        
+        <div class="report-data-row">
+            <span class="report-label">Summary:</span>
+            <span class="report-value">
+                {% if report.safety_rating >= 80 %}
+                <span class="status-safe">Safe</span>
+                {% elif report.safety_rating >= 60 %}
+                <span class="status-warning">Mostly Safe</span>
+                {% elif report.safety_rating >= 40 %}
+                <span class="status-warning">Exercise Caution</span>
+                {% else %}
+                <span class="status-danger">Unsafe</span>
+                {% endif %}
+                - {{ report.comments }}
+            </span>
+        </div>
+    </div>
+    
+    {% if report.warnings %}
+    <div class="report-section">
+        <h2 class="report-section-title">Warnings</h2>
+        {% for warning in report.warnings %}
+            <div class="warning-item">{{ warning }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <div class="report-section">
+        <h2 class="report-section-title">SSL Certificate</h2>
+        {% if report.ssl_info.valid %}
+        <div class="report-data-row">
+            <span class="report-label">Status:</span>
+            <span class="report-value">
+                <span class="status-safe">Valid</span>
+            </span>
+        </div>
+        <div class="report-data-row">
+            <span class="report-label">Issuer:</span>
+            <span class="report-value">{{ report.ssl_info.issuer }}</span>
+        </div>
+        <div class="report-data-row">
+            <span class="report-label">Expires:</span>
+            <span class="report-value">{{ report.ssl_info.expires }}</span>
+        </div>
+        <div class="report-data-row">
+            <span class="report-label">Days Until Expiry:</span>
+            <span class="report-value">{{ report.ssl_info.days_to_expiry }}</span>
+        </div>
+        {% else %}
+        <div class="report-data-row">
+            <span class="report-label">Status:</span>
+            <span class="report-value">
+                <span class="status-danger">Invalid or Missing</span>
+            </span>
+        </div>
+        {% if report.ssl_info.error %}
+        <div class="report-data-row">
+            <span class="report-label">Error:</span>
+            <span class="report-value">{{ report.ssl_info.error }}</span>
+        </div>
+        {% endif %}
+        {% endif %}
+    </div>
+    
+    {% if report.domain_info %}
+    <div class="report-section">
+        <h2 class="report-section-title">Domain Information</h2>
+        <div class="report-data-row">
+            <span class="report-label">Registrar:</span>
+            <span class="report-value">{{ report.domain_info.registrar|default:"Unknown" }}</span>
+        </div>
+        {% if report.domain_info.created_date %}
+        <div class="report-data-row">
+            <span class="report-label">Created Date:</span>
+            <span class="report-value">{{ report.domain_info.created_date }}</span>
+        </div>
+        {% endif %}
+        {% if report.domain_info.expiry_date %}
+        <div class="report-data-row">
+            <span class="report-label">Expiry Date:</span>
+            <span class="report-value">{{ report.domain_info.expiry_date }}</span>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    {% if report.ip_info %}
+    <div class="report-section">
+        <h2 class="report-section-title">IP Address Information</h2>
+        <div class="report-data-row">
+            <span class="report-label">Primary IP:</span>
+            <span class="report-value">{{ report.ip_info.primary_ip|default:"Unknown" }}</span>
+        </div>
+        
+        {% if report.ip_info.ip_range and report.ip_info.ip_range.cidr %}
+        <div class="report-data-row">
+            <span class="report-label">IP Range:</span>
+            <span class="report-value">{{ report.ip_info.ip_range.cidr }}</span>
+        </div>
+        {% endif %}
+        
+        {% if report.ip_info.all_ips and report.ip_info.all_ips|length > 1 %}
+        <div class="report-data-row">
+            <span class="report-label">Additional IPs:</span>
+            <span class="report-value">
+                <ul>
+                {% for ip in report.ip_info.all_ips %}
+                {% if ip != report.ip_info.primary_ip %}
+                <li>{{ ip }}</li>
+                {% endif %}
+                {% endfor %}
+                </ul>
+            </span>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    {% if report.hosting_info %}
+    <div class="report-section">
+        <h2 class="report-section-title">Hosting Information</h2>
+        {% if report.hosting_info.provider %}
+        <div class="report-data-row">
+            <span class="report-label">Provider:</span>
+            <span class="report-value">{{ report.hosting_info.provider }}</span>
+        </div>
+        {% endif %}
+        
+        {% if report.hosting_info.server %}
+        <div class="report-data-row">
+            <span class="report-label">Server:</span>
+            <span class="report-value">{{ report.hosting_info.server }}</span>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    {% if report.discovered_content %}
+    <div class="report-section">
+        <h2 class="report-section-title">Additional Information</h2>
+        
+        {% if report.discovered_content.links and report.discovered_content.links|length > 0 %}
+        <div class="report-data-row">
+            <span class="report-label">Links Found:</span>
+            <span class="report-value">{{ report.discovered_content.links|length }}</span>
+        </div>
+        <div class="report-data-row">
+            <span class="report-label">Links:</span>
+            <span class="report-value">
+                <ul>
+                {% for link in report.discovered_content.links %}
+                <li>{{ link.text|default:link.url }} - {{ link.url }}</li>
+                {% endfor %}
+                </ul>
+            </span>
+        </div>
+        {% endif %}
+        
+        {% if report.discovered_content.scripts and report.discovered_content.scripts|length > 0 %}
+        <div class="report-data-row">
+            <span class="report-label">JavaScripts:</span>
+            <span class="report-value">{{ report.discovered_content.scripts|length }}</span>
+        </div>
+        <div class="report-data-row">
+            <span class="report-label">Scripts:</span>
+            <span class="report-value">
+                <ul>
+                {% for script in report.discovered_content.scripts %}
+                <li>{{ script.url }} {% if script.type %}({{ script.type }}){% endif %}</li>
+                {% endfor %}
+                </ul>
+            </span>
+        </div>
+        {% endif %}
+        
+        {% if report.discovered_content.iframes and report.discovered_content.iframes|length > 0 %}
+        <div class="report-data-row">
+            <span class="report-label">iFrames:</span>
+            <span class="report-value">
+                <ul>
+                {% for iframe in report.discovered_content.iframes %}
+                <li>{{ iframe.url }} {% if iframe.title %}({{ iframe.title }}){% endif %}</li>
+                {% endfor %}
+                </ul>
+            </span>
+        </div>
+        {% endif %}
+        
+        {% if report.discovered_content.embedded_objects and report.discovered_content.embedded_objects|length > 0 %}
+        <div class="report-data-row">
+            <span class="report-label">Embedded Objects:</span>
+            <span class="report-value">
+                <ul>
+                {% for obj in report.discovered_content.embedded_objects %}
+                <li>{{ obj.url }} {% if obj.type %}({{ obj.type }}){% endif %}</li>
+                {% endfor %}
+                </ul>
+            </span>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    {% if report.defacement_info.defaced or report.phishing_info.is_phishing or report.malicious_info.is_malicious %}
+    <div class="report-section">
+        <h2 class="report-section-title">Security Threats Detected</h2>
+        
+        {% if report.defacement_info.defaced %}
+        <div class="danger-item">
+            <strong>⚠️ Defacement Found</strong>
+            <div class="report-data-row">
+                <span class="report-label">Confidence:</span>
+                <span class="report-value">{{ report.defacement_info.confidence }}%</span>
+            </div>
+            <div class="report-data-row">
+                <span class="report-label">Evidence:</span>
+                <span class="report-value">{{ report.defacement_info.evidence }}</span>
+            </div>
+            <div class="report-data-row">
+                <span class="report-label">Defacement Content:</span>
+                <span class="report-value">{{ report.defacement_info.defacement_text }}</span>
+            </div>
+            <p><em>Website defacement is an attack where the visual appearance of a site is changed by a malicious actor. This often indicates that the website has been compromised.</em></p>
+        </div>
+        {% endif %}
+        
+        {% if report.phishing_info.is_phishing %}
+        <div class="danger-item">
+            <strong>⚠️ Phishing Page Detected</strong>
+            <div class="report-data-row">
+                <span class="report-label">Confidence:</span>
+                <span class="report-value">{{ report.phishing_info.confidence }}%</span>
+            </div>
+            <div class="report-data-row">
+                <span class="report-label">Evidence:</span>
+                <span class="report-value">{{ report.phishing_info.evidence }}</span>
+            </div>
+            <div class="report-data-row">
+                <span class="report-label">Target:</span>
+                <span class="report-value">{{ report.phishing_info.phishing_target|default:"Unknown" }}</span>
+            </div>
+            <p><em>This website appears to be a phishing page designed to steal credentials or personal information. Do not enter any personal information on this site.</em></p>
+        </div>
+        {% endif %}
+        
+        {% if report.malicious_info.is_malicious %}
+        <div class="danger-item">
+            <strong>⚠️ Malicious Content Detected</strong>
+            <div class="report-data-row">
+                <span class="report-label">Confidence:</span>
+                <span class="report-value">{{ report.malicious_info.confidence }}%</span>
+            </div>
+            <div class="report-data-row">
+                <span class="report-label">Type:</span>
+                <span class="report-value">{{ report.malicious_info.malicious_type|default:"Unknown" }}</span>
+            </div>
+            <div class="report-data-row">
+                <span class="report-label">Evidence:</span>
+                <span class="report-value">{{ report.malicious_info.evidence }}</span>
+            </div>
+            <p><em>This website contains potentially malicious content that could harm your device or steal information. We recommend avoiding this site.</em></p>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    {% if redirects and redirects|length > 0 %}
+    <div class="report-section">
+        <h2 class="report-section-title">Redirect Chain</h2>
+        <table>
+            <tr>
+                <th>Order</th>
+                <th>URL</th>
+                <th>Status Code</th>
+            </tr>
+            {% for redirect in redirects %}
+            <tr>
+                <td>{{ redirect.order }}</td>
+                <td>{{ redirect.redirect_url }}</td>
+                <td>{{ redirect.status_code|default:"N/A" }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+    
+    {% if trackers and trackers|length > 0 %}
+    <div class="report-section">
+        <h2 class="report-section-title">Detected Trackers</h2>
+        <table>
+            <tr>
+                <th>Tracker</th>
+                <th>Type</th>
+            </tr>
+            {% for tracker in trackers %}
+            <tr>
+                <td>{{ tracker.name }}</td>
+                <td>{{ tracker.type|title }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+    
+    <div class="footer">
+        <p>This report was generated by V.A.S.T. URL Scanner. All information is provided for informational purposes only.</p>
+        <p>© V.A.S.T. - Virus Analysis Scanning Tool</p>
+    </div>
+</body>
+</html>

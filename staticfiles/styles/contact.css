@@ -1,0 +1,205 @@
+    /* <style> */
+        /* General Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto Mono', monospace;
+            /* background-color: #0a1c1e; */
+            background-color: #071f25;
+            color: #fff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: #fff;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            margin-bottom: 1rem;
+        }
+
+        .highlight {
+            color: #00d2f7;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            position: relative;
+            width: 100%;
+            height: 60vh;
+            min-height: 400px;
+            overflow: hidden;
+        }
+
+        .hero-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.8;
+        }
+
+        .hero-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #00d2f7;
+            margin-bottom: 1rem;
+            margin-left:90px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin-bottom: 2rem;
+            margin-left:90px;
+        }
+
+        /* Contact Info Section */
+        .contact-section {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 3rem 0;
+            margin: 0 auto;
+            max-width: 1200px;
+        }
+
+        .contact-details {
+            flex: 1;
+            padding: 1rem;
+            min-width: 300px;
+            margin-left: -250px;
+        }
+
+        .contact-map {
+            flex: 1;
+            padding: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-width: 300px;
+        }
+
+        .contact-map img {
+            max-width: 100%;
+            height: auto;
+            max-height: 300px;
+        }
+
+        .contact-card {
+            margin-bottom: 2rem;
+        }
+
+        .contact-hours {
+            margin-bottom: 2rem;
+        }
+
+        .contact-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-name {
+            font-weight: bold;
+        }
+
+        .contact-email {
+            color: #00d2f7;
+        }
+
+        hr {
+            border: 1px solid #00d2f7;
+            margin: 2rem 0;
+            width: 100%;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            /* background: rgba(16, 43, 45, 0.8); */
+            background: rgba(13, 47, 55, 0.8);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #00d2f741;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            /* background: rgba(19, 55, 57, 0.8); */
+            background: rgba(15, 59, 69, 0.8);
+        }
+
+        /* Media Queries */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .contact-section {
+                flex-direction: column;
+            }
+
+            .contact-map {
+                order: -1;
+                margin-bottom: 2rem;
+            }
+
+        }
+
+        @media (max-width: 480px) {
+            .hero-section {
+                height: 50vh;
+            }
+
+            .hero-title {
+                font-size: 1.8rem;
+            }
+
+            .contact-item {
+                flex-direction: column;
+            }
+
+        }
+
+        /* Username display in dropdown */
+        .username-display {
+            font-weight: bold;
+            color: #00d2f7 !important;
+        }
+        
+        .joined-date {
+            font-size: 0.8em;
+            color: #ccc !important;
+        }
+    /* </style> */

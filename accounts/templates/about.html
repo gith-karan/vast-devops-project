@@ -1,0 +1,206 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VAST - Virus Analysis Scanning Tool</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'styles/about.css' %}" />
+    <link rel="stylesheet" href="{% static 'styles/navbar.css' %}" />
+    <script src="{% static 'styles/navbar.js' %}" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <div class="navbar-container">
+        <nav class="navbar">
+            <div class="brand-container">
+                <img src="{% static 'img/nav_logo.png' %}" alt="VAST Logo" class="logo-img">
+                <span class="brand-text">Virus Analysis Scanning Tool</span>
+            </div>
+
+            <div class="mobile-menu-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white">
+                    <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+                </svg>
+            </div>
+
+            <div class="nav-links">
+                <a href="{% url 'accounts:home' %}" class="nav-item">Home</a>
+
+                <div class="dropdown">
+                    <a href="#" class="nav-item">Services ▾</a>
+                    <div class="dropdown-content services-dropdown">
+                        <a href="{% url 'services:email_scanner' %}" class="dropdown-item">
+                            <div class="dropdown-icon">
+                                <img src="https://api.iconify.design/mdi:email-outline.svg?color=%2300d2f7"
+                                    alt="Email Scanner" class="drop_icon_hover">
+                            </div>
+                            <span>E-Mail Scanner</span>
+                            <div class="arrow-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="#00d2f7" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="{% url 'services:url_scanner' %}" class="dropdown-item">
+                            <div class="dropdown-icon">
+                                <img src="https://api.iconify.design/mdi:web.svg?color=%2300d2f7" alt="URL Scanner"
+                                    class="drop_icon_hover">
+                            </div>
+                            <span>URL Scanner</span>
+                            <div class="arrow-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="#00d2f7" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="{% url 'services:file_scanner' %}" class="dropdown-item">
+                            <div class="dropdown-icon">
+                                <img src="https://api.iconify.design/mdi:file-document-outline.svg?color=%2300d2f7"
+                                    alt="File Scanner" class="drop_icon_hover">
+                            </div>
+                            <span>File Scanner</span>
+                            <div class="arrow-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="#00d2f7" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item">
+                            <div class="dropdown-icon">
+                                <img src="{% static 'img/Network Scanner Logo.png' %}" alt="Network Scanner" class="drop_icon_hover">
+                            </div>
+                            <span>Network Scanner</span>
+                            <div class="arrow-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="#00d2f7" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <a href="{% url 'accounts:about' %}" class="nav-item active">About Us</a>
+                <a href="{% url 'accounts:contact' %}" class="nav-item">Contact us</a>
+
+                <div class="dropdown">
+                    <div class="user-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
+                        </svg>
+                    </div>
+                    <div class="dropdown-content">
+                        {% if is_guest %}
+                            <a href="{% url 'accounts:login' %}" class="dropdown-item">Log In / Sign Up</a>
+                        {% else %}
+                            <a href="#" class="dropdown-item username-display">{{ username }}</a>
+                            {% if joined_date %}
+                            <a href="#" class="dropdown-item joined-date">Joined: {{ joined_date|date:"M d, Y" }}</a>
+                            {% endif %}
+                            <div class="dropdown-divider"></div>
+                            <a href="{% url 'accounts:logout' %}" class="dropdown-item">Log Out</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Hero Section - With shield at left edge of border -->
+    <section class="hero">
+        <div class="hero-container">
+            <img src="{% static 'img/about_us_logo.png' %}" alt="Security Shield" class="shield-logo">
+            <h1 class="hero-title">Protect Your Self With V.A.S.T.</h1>
+        </div>
+    </section>
+
+    <!-- Content Sections -->
+    <div class="content-section">
+        <!-- Mission Section -->
+        <div class="mission-text">
+            <p>Our mission is to empower users with intuitive, comprehensive security tools that simplify threat
+                detection and prevention. We are dedicated to enhancing cybersecurity awareness and protection for all,
+                ensuring that everyone has access to the resources they need to safeguard their personal information and
+                online activities.</p>
+        </div>
+
+        <!-- What Makes Us Different -->
+        <h2 class="section-title">What Makes Us Different</h2>
+        <div class="section-content">
+            <p>V.A.S.T. is designed with a user-friendly interface, making it easy for anyone to use effectively.</p>
+            <br>
+            <p>V.A.S.T. offers a wider range of scanning features compared to competitors, addressing various types of
+                cyber threats in one tool.</p>
+            <br>
+            <p>Our tool provides detailed analysis and is updated with the latest threats occurring in the world.</p>
+            <br>
+            <p>We actively engage with our users through feedback, FAQs, fostering a sense of community and shared
+                knowledge, which sets us apart from cybersecurity solutions that may lack this personal touch.</p>
+        </div>
+
+        <!-- Products and Services Section -->
+        <h2 class="section-title">Products and Services</h2>
+        <div class="section-content">
+            <div class="service-item">
+                <span class="service-title">Email ID Scanning:</span>
+                <span class="service-description"> Our tool scans email addresses for potential phishing attempts and
+                    fraudulent content, helping users identify and avoid malicious emails before they can cause harm.</span>
+            </div>
+            <br>
+            <div class="service-item">
+                <span class="service-title">URL Scanner:</span>
+                <span class="service-description"> This feature evaluates URLs for safety, detecting harmful links and
+                    alerting users to potential threats, ensuring safer browsing experiences.</span>
+            </div>
+            <br>
+            <div class="service-item">
+                <span class="service-title">Malware Scanner:</span>
+                <span class="service-description"> Our robust malware scanning capabilities identify malicious software from
+                    devices, protecting user data and maintaining system integrity.</span>
+            </div>
+            <br>
+            <div class="service-item">
+                <span class="service-title">Network Scanner:</span>
+                <span class="service-description"> This service assesses the security of entire networks, detecting
+                    vulnerabilities and providing insights to enhance overall cybersecurity.</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <a href="{% url 'accounts:contact' %}" class="contact-btn">Contact Us For More Details</a>
+            <div class="social-section">
+                <div class="social-title">Social Media Links</div>
+                <div class="social-links">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy;VAST All right reserved
+        </div>
+    </footer>
+</body>
+
+</html>

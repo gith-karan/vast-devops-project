@@ -1,0 +1,288 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Virus Analysis Scanning Tool</title>
+    <link rel="stylesheet" href="{% static 'styles/home.css' %}" />
+    <link rel="stylesheet" href="{% static 'styles/navbar.css' %}" />
+    <script src="{% static 'styles/navbar.js' %}" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <div class="toast" id="welcome-toast">
+        <div class="toast-content">
+            <div class="toast-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <div class="toast-message"></div>
+        </div>
+    </div>
+    <!-- new navbar -->
+    <div class="navbar-container">
+        <nav class="navbar">
+            <div class="brand-container">
+                <img src="{% static 'img/nav_logo.png' %}" alt="VAST Logo" class="logo-img">
+                <span class="brand-text">Virus Analysis Scanning Tool</span>
+            </div>
+
+            <div class="mobile-menu-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white">
+                    <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+                </svg>
+            </div>
+
+            <div class="nav-links">
+                <a href="{% url 'accounts:home'%}" class="nav-item active">Home</a>
+
+                <div class="dropdown">
+                    <a href="#" class="nav-item">Services ▾</a>
+                    <div class="dropdown-content services-dropdown">
+                        <a href="{% url 'services:email_scanner'%}" class="dropdown-item">
+                            <div class="dropdown-icon">
+                                <img src="https://api.iconify.design/mdi:email-outline.svg?color=%2300d2f7"
+                                    alt="Email Scanner" class="drop_icon_hover">
+                            </div>
+                            <span>E-Mail Scanner</span>
+                            <div class="arrow-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="#00d2f7" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="{% url 'services:url_scanner' %}" class="dropdown-item">
+                            <div class="dropdown-icon">
+                                <img src="https://api.iconify.design/mdi:web.svg?color=%2300d2f7" alt="URL Scanner"
+                                    class="drop_icon_hover">
+                            </div>
+                            <span>URL Scanner</span>
+                            <div class="arrow-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="#00d2f7" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="{% url 'services:file_scanner' %}" class="dropdown-item">
+                            <div class="dropdown-icon">
+                                <img src="https://api.iconify.design/mdi:file-document-outline.svg?color=%2300d2f7"
+                                    alt="File Scanner" class="drop_icon_hover">
+                            </div>
+                            <span>File Scanner</span>
+                            <div class="arrow-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="#00d2f7" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item">
+                            <div class="dropdown-icon">
+                                <img src="{% static 'img/Network Scanner Logo.png' %}" alt="Network Scanner" class="drop_icon_hover">
+                            </div>
+                            <span>Network Scanner</span>
+                            <div class="arrow-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="#00d2f7" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <a href="{% url 'accounts:about' %}" class="nav-item">About Us</a>
+                <a href="{% url 'accounts:contact' %}" class="nav-item">Contact us</a>
+
+                <div class="dropdown">
+                    <div class="user-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
+                        </svg>
+                    </div>
+                    <div class="dropdown-content">
+                        {% if is_guest %}
+                            <a href="{% url 'accounts:login' %}" class="dropdown-item">Log In / Sign Up</a>
+                        {% else %}
+                            <a href="#" class="dropdown-item username-display">{{ username }}</a>
+                            {% if joined_date %}
+                            <a href="#" class="dropdown-item joined-date">Joined: {{ joined_date|date:"M d, Y" }}</a>
+                            {% endif %}
+                            <div class="dropdown-divider"></div>
+                            <a href="{% url 'accounts:logout' %}" class="dropdown-item">Log Out</a>
+                        {% endif %}
+                    </div>
+                    
+                </div>
+            </div>
+        </nav>
+    </div>
+    <!-- navbar end -->
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="shield-img">
+            <img src="{% static 'img/home_shield_image.png' %}" alt="Shield_image">
+        </div>
+        <div class="hero-image">
+            <div class="grid-container">
+                <div class="grid" id="grid"></div>
+            </div>
+        </div>
+        <div class="hero-content">
+            <h1>
+                <span class="highlight">Empowering</span> You with<br>
+                Reliable <span class="highlight">Online</span><br>
+                <span class="highlight">Safety</span> Tools.
+            </h1>
+            <p>V.A.S.T. offers quick and easy-to-use solutions to secure your digital presence.</p>
+            <button id="get-started" class="cta-button">Get Started</button>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services">
+        <div class="container">
+            <h2>Services <span class="highlight">Provided</span> by Us</h2>
+            <div class="services-container">
+                <!-- Email Scanner Card -->
+                <a href="{% url 'services:email_scanner'%}" class="service-card">
+                    <div class="service-icon">
+                        <img src="https://api.iconify.design/mdi:email-outline.svg?color=%2300d2f7" alt="Email Scanner">
+                    </div>
+                    <div class="card-content">
+                        <h3>E-Mail Address Scanner</h3>
+                        <p>Instantly verify any email addresses and spot potentially harmful emails.</p>
+                    </div>
+                </a>
+
+                <!-- URL Scanner Card -->
+                <a href="{% url 'services:url_scanner' %}" class="service-card">
+                    <div class="service-icon">
+                        <img src="https://api.iconify.design/mdi:web.svg?color=%2300d2f7" alt="URL Scanner">
+                    </div>
+                    <div class="card-content">
+                        <h3>URL Scanner</h3>
+                        <p>Efficiently analyze URLs for a secure online experience and protect yourself from risky
+                            websites.</p>
+                    </div>
+                </a>
+
+                <!-- File Scanner Card -->
+                <a href="{% url 'services:file_scanner' %}" class="service-card">
+                    <div class="service-icon">
+                        <img src="https://api.iconify.design/mdi:file-document-outline.svg?color=%2300d2f7"
+                            alt="File Scanner">
+                    </div>
+                    <div class="card-content">
+                        <h3>File Scanner</h3>
+                        <p>Scan files to protect your system with comprehensive malware attacks.</p>
+                    </div>
+                </a>
+
+                <!-- Network Scanner Card -->
+                <a href="#" class="service-card">
+                    <div class="service-icon">
+                        <img src="{% static 'img/Network Scanner Logo.png' %}" alt="Network Scanner">
+                        <!-- https://api.iconify.design/mdi:network-outline.svg?color=%2300d2f7 -->
+                    </div>
+                    <div class="card-content">
+                        <h3>Network Scanner</h3>
+                        <p>Easily monitor connected devices and maintain their security.</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <a href="{% url 'accounts:contact' %}" class="contact-btn">Contact Us For More Details</a>
+            <div class="social-section">
+                <div class="social-title">Social Media Links</div>
+                <div class="social-links">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy;VAST All right reserved
+        </div>
+    </footer>
+
+    <!-- glowing design -->
+    <script>
+        const grid = document.getElementById("grid");
+
+        for (let i = 0; i < 300; i++) {
+            const cell = document.createElement("div");
+            cell.className = "grid-cell";
+            grid.appendChild(cell);
+        }
+
+        function randomHighlight() {
+            const cells = document.querySelectorAll(".grid-cell");
+            cells.forEach((cell) => cell.classList.remove("highlight"));
+
+            for (let i = 0; i < 10; i++) {
+                const randomIndex = Math.floor(
+                    Math.random() * cells.length,
+                );
+                cells[randomIndex].classList.add("highlight");
+            }
+        }
+
+        randomHighlight();
+
+        setInterval(randomHighlight, 2000);
+
+        document.querySelector('.cta-button').addEventListener('click', function () {
+            document.getElementById('services').scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+
+        // Welcome toast function
+        function showWelcomeToast(message) {
+            const toast = document.getElementById("welcome-toast");
+            const messageElement = toast.querySelector(".toast-message");
+            
+            messageElement.textContent = message;
+            
+            toast.style.display = "block";
+            
+            setTimeout(() => {
+                toast.classList.add("toast-visible");
+            }, 10);
+            
+            setTimeout(() => {
+                toast.classList.remove("toast-visible");
+                
+                setTimeout(() => {
+                    toast.style.display = "none";
+                }, 300); 
+            }, 5000);
+        }
+
+        {% if welcome_message %}
+            showWelcomeToast("{{ welcome_message }}");
+        {% endif %}
+    </script>
+</body>
+
+</html>

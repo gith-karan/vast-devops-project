@@ -1,0 +1,21 @@
+{
+  "build_number": "20250619_165013",
+  "timestamp": "2025-06-19T16:50:13.918669",
+  "stages": {
+    "Code Checkout": {
+      "success": true,
+      "message": "Django project found",
+      "timestamp": "2025-06-19T16:50:13.919653"
+    },
+    "Dependency Check": {
+      "success": true,
+      "message": "All dependencies satisfied",
+      "timestamp": "2025-06-19T16:50:15.054447"
+    },
+    "Security Scan": {
+      "success": false,
+      "message": "Found 3 security issues: DEBUG mode enabled, Using default insecure secret key, Empty ALLOWED_HOSTS",
+      "timestamp": "2025-06-19T16:50:15.054447"
+    }
+  }
+}

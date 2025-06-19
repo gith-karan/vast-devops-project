@@ -1,0 +1,323 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>V.A.S.T. -Login</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'styles/login.css' %}" />
+</head>
+
+<body>
+  <div class="toast" id="toast"></div>
+  <div class="page-container">
+    <section class="brand-section">
+      <div class="brand-content">
+        <h1 class="title">Welcome To V.A.S.T.</h1>
+        <p class="subtitle">Scan, Detect, and Secure - In Seconds</p>
+      </div>
+    </section>
+
+    <section class="login-section">
+      <div class="container">
+        <div class="login-box">
+          {% csrf_token %}
+          <!-- Email Section -->
+          <div id="email-section">
+            <h2 class="login-title">Create account or login</h2>
+            <form id="email-form" onsubmit="validateEmail(); return false;">
+              <input type="email" class="email-input" id="email-input" placeholder="Enter your email address" autofocus />
+              <button type="submit" class="continue-btn">
+                Continue with email
+              </button>
+            </form>
+
+            <div class="divider">
+              <span>Or continue with</span>
+            </div>
+
+            <button class="google-btn">
+              <img src="{% static 'img/sign-in-with-google.png' %}" alt="Google" class="google-icon" />
+              Login with Google
+            </button>
+          </div>
+
+          <!-- OTP Section -->
+          <div id="otp-section" class="otp-container">
+            <h2 class="login-title">Check your email</h2>
+            <p style="margin-bottom: 20px; color: #ffffff">
+              Enter the OTP sent to your email address
+              <span id="display-email" class="email-display"></span>
+            </p>
+            <form id="otp-form" onsubmit="verifyOTP(); return false;">
+              <input type="text" class="otp-input" id="otp-input" placeholder="Enter verification code" maxlength="6" inputmode="numeric"/>
+              <button type="submit" class="continue-btn">
+                Verify email address
+              </button>
+            </form>
+            <div style="text-align: center; margin-top: 16px">
+              <span id="resend-link" class="resend-link" onclick="resendOTP()">Try sending OTP again</span>
+              <span id="resend-timer" class="resend-timer" style="display: none; color: #aaa; font-size: 0.9em;"></span>
+            </div>
+          </div>
+        </div>
+        <a href="{% url 'accounts:home' %}">
+          <button class="skip-btn">Continue without an account</button>
+        </a>
+      </div>
+    </section>
+  </div>
+  <script>
+    // Track resends
+    let resendCount = 0;
+    let resendTimer = null;
+    let resendDisabled = false;
+
+    let toastResetTimeout = null;
+
+    function showToast(message, isSuccess = false) {
+      const toast = document.getElementById("toast");
+      
+      if (toastResetTimeout) {
+        clearTimeout(toastResetTimeout);
+        toastResetTimeout = null;
+      }
+      
+      if (isSuccess) {
+        const originalColor = toast.style.color;
+        const originalBgColor = toast.style.backgroundColor; 
+        const originalBorder = toast.style.border;
+        
+        toast.style.color = "#00d2f7";
+        toast.style.backgroundColor = "#0e3f4b";
+        toast.style.border = "1px solid #33dbff";
+        
+        toastResetTimeout = setTimeout(() => {
+          toast.style.color = originalColor;
+          toast.style.backgroundColor = originalBgColor;
+          toast.style.border = originalBorder;
+          toastResetTimeout = null;
+        }, 3100);
+      } else {
+        toast.style.color = ""; 
+        toast.style.backgroundColor = ""; 
+        toast.style.border = ""; 
+      }
+      
+      toast.textContent = message;
+      toast.style.display = "block";
+      setTimeout(() => {
+        toast.style.display = "none";
+      }, 3000);
+    }
+
+    document.getElementById("otp-input").addEventListener("input", function(e) {
+      let value = e.target.value.replace(/[^0-9]/g, ""); // Remove non-digits
+      
+      if (value.length > 6) value = value.substring(0, 6);
+      
+      this.value = value;
+    });
+    
+    function validateEmail() {
+      const emailInput = document.getElementById("email-input");
+      const email = emailInput.value.trim();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+      
+      if (!email) {
+        showToast("Please enter your email address");
+        return;
+      }
+    
+      if (!emailRegex.test(email)) {
+        showToast("Please enter a valid email address");
+        return;
+      }
+    
+      const continueBtn = document.querySelector(".continue-btn");
+      const originalBtnText = continueBtn.innerHTML;
+      continueBtn.innerHTML = `
+          Sending OTP...
+      `;
+      continueBtn.disabled = true;
+    
+      fetch('/send-otp/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-CSRFToken': csrftoken,
+        },
+        body: `email=${encodeURIComponent(email)}`
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            document.getElementById("email-section").style.display = "none";
+            document.getElementById("otp-section").style.display = "block";
+            document.getElementById("display-email").textContent = email;
+            
+            setTimeout(() => {
+              document.getElementById("otp-input").focus();
+            }, 100);
+            
+            resendCount = 0;
+          } else {
+            showToast(data.message);
+            continueBtn.innerHTML = originalBtnText;
+            continueBtn.disabled = false;
+          }
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          showToast("Failed to send OTP. Please try again.");
+          continueBtn.innerHTML = originalBtnText;
+          continueBtn.disabled = false;
+      });
+    }
+
+    function verifyOTP() {
+      const otpInput = document.getElementById("otp-input");
+      const otp = otpInput.getAttribute('data-value') || otpInput.value.trim().replace(/-/g, "");
+      const email = document.getElementById("display-email").textContent;
+      const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+      if (!otp) {
+        showToast("Please enter the verification code");
+        return;
+      }
+    
+      if (otp.length !== 6) {
+        showToast("Please enter a valid 6-digit code");
+        return;
+      }
+    
+      fetch('/verify-otp/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-CSRFToken': csrftoken,
+        },
+        body: `email=${encodeURIComponent(email)}&otp=${encodeURIComponent(otp)}`
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            showToast("Login successful!", true);
+            window.location.href = "/";
+          } else {
+            showToast(data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          showToast("Failed to verify OTP. Please try again.");
+        });
+    }
+
+    function resendOTP() {
+      if (resendDisabled) {
+        return;
+      }
+      
+      const email = document.getElementById("display-email").textContent;
+      const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+      
+      const resendLink = document.getElementById('resend-link');
+      resendLink.style.opacity = '0.5';
+      resendLink.style.pointerEvents = 'none';
+    
+      fetch('/send-otp/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-CSRFToken': csrftoken,
+        },
+        body: `email=${encodeURIComponent(email)}`
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            showToast("New OTP sent to " + email, true);
+            resendCount++;
+            
+            if (resendCount >= 3) {
+              startResendCooldown(120); 
+            } else {
+              setTimeout(() => {
+                resendLink.style.opacity = '1';
+                resendLink.style.pointerEvents = 'auto';
+              }, 2000);
+            }
+          } else {
+            showToast(data.message);
+            resendLink.style.opacity = '1';
+            resendLink.style.pointerEvents = 'auto';
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          showToast("Failed to send OTP. Please try again.");
+          resendLink.style.opacity = '1';
+          resendLink.style.pointerEvents = 'auto';
+        });
+    }
+    
+    function startResendCooldown(seconds) {
+      resendDisabled = true;
+      
+      const resendLink = document.getElementById('resend-link');
+      const resendTimer = document.getElementById('resend-timer');
+      
+      resendLink.style.display = 'none';
+      resendTimer.style.display = 'inline';
+      
+      let timeLeft = seconds;
+      updateResendTimer(timeLeft);
+      
+      const countdownInterval = setInterval(() => {
+        timeLeft--;
+        updateResendTimer(timeLeft);
+        
+        if (timeLeft <= 0) {
+          clearInterval(countdownInterval);
+          resendDisabled = false;
+          resendCount = 0;
+          resendLink.style.display = 'inline';
+          resendLink.style.opacity = '1';
+          resendLink.style.pointerEvents = 'auto';
+          resendTimer.style.display = 'none';
+        }
+      }, 1000);
+    }
+    
+    function updateResendTimer(seconds) {
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+      document.getElementById('resend-timer').textContent = 
+        `Try again in ${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+    }
+  </script>
+
+  <!-- Left side wave -->
+  <object type="text/html" data="wave-animation.html"
+    style="width:300px; height:800px; position:fixed; left:-157px; top:39%; transform:translateY(-50%) scale(1.2);">
+  </object>
+
+    <!-- <div style="position:fixed; right:0; top:0; width:200px; height:300px;">
+    <object type="text/html" data="animation.html" 
+    style="width:400px; height:100vh; position:relative; right:0;
+    transform: rotate(0deg) scale(0.8);">
+    </object>
+  </div> -->
+  
+  <!-- Right side wave -->
+  <object type="text/html" data="wave-animation.html"
+    style="width:300px; height:750px; position:fixed; right:-155px; top:68%; transform:translateY(-50%);">
+  </object>
+</body>
+
+</html>

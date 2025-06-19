@@ -1,0 +1,724 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>File Scanner - VAST</title>
+    <link rel="stylesheet" href="{% static 'styles/file.css' %}" />
+    <link rel="stylesheet" href="{% static 'styles/navbar.css' %}" />
+    <script src="{% static 'styles/navbar.js' %}" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <!-- navbar container -->
+    <div class="navbar-container">
+        <nav class="navbar">
+            <div class="brand-container">
+                <img src="{% static 'img/nav_logo.png' %}" alt="VAST Logo" class="logo-img">
+                <span class="brand-text">Virus Analysis Scanning Tool</span>
+            </div>
+
+            <div class="mobile-menu-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white">
+                    <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+                </svg>
+            </div>
+
+            <div class="nav-links">
+                <a href="{% url 'accounts:home' %}" class="nav-item">Home</a>
+
+                <div class="dropdown">
+                    <a href="{% url 'services:file_scanner' %}" class="nav-item active">Services ▾</a>
+                    <div class="dropdown-content services-dropdown">
+                        <a href="{% url 'services:email_scanner' %}" class="dropdown-item">
+                            <div class="dropdown-icon">
+                                <img src="https://api.iconify.design/mdi:email-outline.svg?color=%2300d2f7"
+                                    alt="Email Scanner" class="drop_icon_hover">
+                            </div>
+                            <span>E-Mail Scanner</span>
+                            <div class="arrow-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="#00d2f7" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="{% url 'services:url_scanner' %}" class="dropdown-item">
+                            <div class="dropdown-icon">
+                                <img src="https://api.iconify.design/mdi:web.svg?color=%2300d2f7" alt="URL Scanner"
+                                    class="drop_icon_hover">
+                            </div>
+                            <span>URL Scanner</span>
+                            <div class="arrow-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="#00d2f7" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="{% url 'services:file_scanner' %}" class="dropdown-item">
+                            <div class="dropdown-icon">
+                                <img src="https://api.iconify.design/mdi:file-document-outline.svg?color=%2300d2f7"
+                                    alt="File Scanner" class="drop_icon_hover">
+                            </div>
+                            <span>File Scanner</span>
+                            <div class="arrow-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="#00d2f7" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item">
+                            <div class="dropdown-icon">
+                                <img src="{% static 'img/Network Scanner Logo.png' %}" alt="Network Scanner" class="drop_icon_hover">
+                            </div>
+                            <span>Network Scanner</span>
+                            <div class="arrow-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="#00d2f7" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <a href="{% url 'accounts:about' %}" class="nav-item">About Us</a>
+                <a href="{% url 'accounts:contact' %}" class="nav-item">Contact us</a>
+
+                <div class="dropdown">
+                    <div class="user-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
+                        </svg>
+                    </div>
+                    <div class="dropdown-content">
+                        {% if is_guest %}
+                            <a href="{% url 'accounts:login' %}" class="dropdown-item">Log In / Sign Up</a>
+                        {% else %}
+                            <a href="#" class="dropdown-item username-display">{{ username }}</a>
+                            {% if joined_date %}
+                            <a href="#" class="dropdown-item joined-date">Joined: {{ joined_date|date:"M d, Y" }}</a>
+                            {% endif %}
+                            <div class="dropdown-divider"></div>
+                            <a href="{% url 'accounts:logout' %}" class="dropdown-item">Log Out</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <!-- File Scanner Section -->
+    <section class="file-scanner-section">
+        <h1 class="file-scanner-title">File Scanner</h1>
+        {% csrf_token %}
+        <div class="file-scanner-container">
+            <div class="drag-drop-area" id="drag-drop-area">
+                <p>Drag & Drop</p>
+                <button class="choose-file-btn" id="choose-file-btn">Choose File</button>
+                <input type="file" id="file-input" accept=".exe,.pdf,.docx,.xlsx,.jpg,.png,.zip,.rar,.txt,.py,.js,.php,.html,.css,.xml,.json" />
+            </div>
+
+            <!-- Results Section  -->
+            <div class="result-container" id="result-container">
+                <div class="result-row">
+                    <div class="result-label">File :</div>
+                    <div class="result-value" id="result-file">-</div>
+                </div>
+                {% comment %} <div class="result-row">
+                    <div class="result-label">Size :</div>
+                    <div class="result-value" id="result-size">-</div>
+                </div>
+                <div class="result-row">
+                    <div class="result-label">Type :</div>
+                    <div class="result-value" id="result-type">-</div>
+                </div> {% endcomment %}
+                <div class="result-row" style="border-bottom: none;">
+                    <div class="result-label">Status:</div>
+                    <div class="result-value" id="result-status">-</div>
+                </div>
+                <div>
+                    <a href="#" class="view-report-btn" id="view-report">
+                        View Detailed Report
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Loading indicator -->
+            <div class="scanning-message" id="scanning-message" style="display:none; text-align:center; margin-top:20px;">
+                <span class="scanning-status">Scanning...</span>
+            </div>
+
+            <!-- Report Modal -->
+            <div id="report-modal" class="report-modal">
+                <div class="report-modal-content">
+                    <div class="report-modal-header">
+                        <h2>File Analysis Report</h2>
+                        <span class="close-modal" id="close-modal">&times;</span>
+                        <a href="#" id="download-report" class="download-report">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                        </a>
+                    </div>
+                    <div class="report-modal-body">
+                        <div id="report-content">
+                            <!-- Report content will be here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ Section -->
+            <div class="faq-section">
+                <h2 class="faq-title">FAQs about File Scanner</h2>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>What does File Scanner do?</span>
+                        <span class="faq-toggle">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>File Scanner checks uploaded files for potential threats like malware, viruses,
+                            and other malicious content. It uses advanced analysis to detect suspicious
+                            signatures and patterns, helping protect your system from infection.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>How to scan a file for viruses?</span>
+                        <span class="faq-toggle">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Simply drag and drop your file into the designated area, or click "Choose File" to
+                            upload it. The scanner will analyze the file and let you know if it detects
+                            anything suspicious.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" style="border-bottom: none;">
+                    <div class="faq-question">
+                        <span>Why you should choose V.A.S.T. File Scanner?</span>
+                        <span class="faq-toggle">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>V.A.S.T. File Scanner offers a powerful scanning engine that checks your files
+                            against an extensive database of known threats. It also uses heuristic detection
+                            methods to identify zero-day or emerging malware. Our solution is fast, reliable,
+                            and respects your privacy by not storing files longer than necessary.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feedback Section -->
+            <div class="feedback-section">
+                <h3 class="feedback-title">Feedback</h3>
+                <textarea class="feedback-input" id="feedback-text"
+                    placeholder="Your comments and feedback help us to improve."></textarea>
+                <div class="feedback-submit">
+                    <button class="feedback-btn" id="feedback-btn">
+                        Submit
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </button>
+                </div>
+                <div class="feedback-message"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <a href="{% url 'accounts:contact' %}" class="contact-btn">Contact Us For More Details</a>
+            <div class="social-section">
+                <div class="social-title">Social Media Links</div>
+                <div class="social-links">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy;VAST All right reserved
+        </div>
+    </footer>
+
+    <!-- Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            const csrftoken = getCookie('csrftoken');
+
+            const dragDropArea = document.getElementById('drag-drop-area');
+            const chooseFileBtn = document.getElementById('choose-file-btn');
+            const fileInput = document.getElementById('file-input');
+            const resultContainer = document.getElementById('result-container');
+            const resultFile = document.getElementById('result-file');
+            const resultSize = document.getElementById('result-size');
+            const resultType = document.getElementById('result-type');
+            const resultStatus = document.getElementById('result-status');
+            const viewReport = document.getElementById('view-report');
+            const reportModal = document.getElementById('report-modal');
+            const closeModal = document.getElementById('close-modal');
+            const downloadReport = document.getElementById('download-report');
+            const reportContent = document.getElementById('report-content');
+            const feedbackBtn = document.getElementById('feedback-btn');
+            const scanningMessage = document.getElementById('scanning-message');
+            
+            let currentFile = null;
+            let currentScanData = null;
+
+            chooseFileBtn.addEventListener('click', function() {
+                fileInput.click();
+            });
+
+            fileInput.addEventListener('change', function() {
+                if (fileInput.files.length > 0) {
+                    handleFileUpload(fileInput.files[0]);
+                }
+            });
+
+            dragDropArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                dragDropArea.classList.add('drag-over');
+            });
+
+            dragDropArea.addEventListener('dragleave', function() {
+                dragDropArea.classList.remove('drag-over');
+            });
+
+            dragDropArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                dragDropArea.classList.remove('drag-over');
+                
+                if (e.dataTransfer.files.length > 0) {
+                    handleFileUpload(e.dataTransfer.files[0]);
+                }
+            });
+
+            function handleFileUpload(file) {
+                currentFile = file;
+                
+                resultFile.textContent = file.name;
+                {% comment %} resultSize.textContent = formatFileSize(file.size); {% endcomment %}
+                {% comment %} resultType.textContent = file.type || 'Unknown'; {% endcomment %}
+                {% comment %} resultType.textContent = getSimpleFileType(file.type) || 'Unknown'; {% endcomment %}
+
+                resultStatus.textContent = 'Scanning...';
+                resultStatus.style.color = '#FFA500'; 
+                {% comment %} scanningMessage.style.display = 'block'; {% endcomment %}
+                if (scanningMessage) scanningMessage.style.display = 'none';
+                
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                fetch('/services/file/scan/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.error || 'Error scanning file');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    resultStatus.textContent = data.status;
+                    {% comment %} scanningMessage.style.display = 'none'; {% endcomment %}
+                    if (scanningMessage) scanningMessage.style.display = 'none';
+                    
+                    currentScanData = data;
+                    
+                    if (data.status.toLowerCase() === 'safe') {
+                        resultStatus.style.color = '#4CAF50'; 
+                    } else if (data.status.toLowerCase() === 'malicious') {
+                        resultStatus.style.color = '#FF5252';
+                    }else if (data.status.toLowerCase() === 'steganography found') {
+                        resultStatus.style.color = '#FF9800';
+                    }  else {
+                        resultStatus.style.color = '#FFC107'; 
+                    }
+                })
+                .catch(error => {
+                    resultStatus.textContent = 'Error: ' + error.message;
+                    resultStatus.style.color = '#FF5252'; 
+                    scanningMessage.style.display = 'none';
+                });
+            }
+
+            function getSimpleFileType(mimeType) {
+                const typeMap = {
+                    // Documents
+                    'application/pdf': 'PDF Document',
+                    'application/msword': 'Word Document',
+                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'Word Document',
+                    'application/vnd.ms-excel': 'Excel Spreadsheet',
+                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'Excel Spreadsheet',
+                    'application/vnd.ms-powerpoint': 'PowerPoint',
+                    'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'PowerPoint',
+                    'text/plain': 'Text File',
+                    'text/csv': 'CSV File',
+                    'text/html': 'HTML File',
+                    'text/xml': 'XML File',
+                    'application/json': 'JSON File',
+                    'application/rtf': 'Rich Text Format',
+                    
+                    // Images
+                    'image/jpeg': 'JPEG Image',
+                    'image/png': 'PNG Image',
+                    'image/gif': 'GIF Image',
+                    'image/bmp': 'BMP Image',
+                    'image/webp': 'WebP Image',
+                    'image/tiff': 'TIFF Image',
+                    'image/svg+xml': 'SVG Image',
+                    
+                    // Archives
+                    'application/zip': 'ZIP Archive',
+                    'application/x-zip-compressed': 'ZIP Archive',
+                    'application/x-rar-compressed': 'RAR Archive',
+                    'application/x-tar': 'TAR Archive',
+                    'application/gzip': 'GZIP Archive',
+                    'application/x-7z-compressed': '7Z Archive',
+                    
+                    // Executables
+                    'application/x-msdownload': 'Windows Executable',
+                    'application/x-executable': 'Executable',
+                    'application/x-mach-binary': 'Binary File',
+                    'application/x-mach-o-binary': 'Binary File',
+                    'application/x-sharedlib': 'Shared Library',
+                    'application/x-python-code': 'Python Bytecode',
+                    'application/x-dosexec': 'Windows Executable',
+                    
+                    // Audio/Video
+                    'audio/mpeg': 'MP3 Audio',
+                    'audio/wav': 'WAV Audio',
+                    'audio/ogg': 'OGG Audio',
+                    'video/mp4': 'MP4 Video',
+                    'video/mpeg': 'MPEG Video',
+                    'video/webm': 'WebM Video',
+                    'video/x-msvideo': 'AVI Video',
+                    
+                    // Scripts
+                    'text/javascript': 'JavaScript File',
+                    'application/x-python': 'Python Script',
+                    'application/x-php': 'PHP Script',
+                    'application/x-ruby': 'Ruby Script',
+                    'application/x-shellscript': 'Shell Script',
+                    'application/x-perl': 'Perl Script'
+                };
+                
+                return typeMap[mimeType] || mimeType;
+            }
+
+            viewReport.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                if (!currentScanData) {
+                    alert('Please scan a file first');
+                    return;
+                }
+                
+                displayDetailedReport(currentScanData);
+                reportModal.style.display = 'block';
+            });
+
+            closeModal.addEventListener('click', function() {
+                reportModal.style.display = 'none';
+            });
+
+            window.addEventListener('click', function(event) {
+                if (event.target === reportModal) {
+                    reportModal.style.display = 'none';
+                }
+            });
+
+            downloadReport.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                if (!currentScanData || !currentScanData.scan_id) {
+                    alert('No scan data available to generate report');
+                    return;
+                }
+                
+                window.open(`/services/file/generate-pdf/?scan_id=${currentScanData.scan_id}`, '_blank');
+            });
+            function formatFileSize(bytes) {
+                if (bytes < 1024) {
+                    return bytes + ' bytes';
+                } else if (bytes < 1024 * 1024) {
+                    return (bytes / 1024).toFixed(1) + ' KB';
+                } else if (bytes < 1024 * 1024 * 1024) {
+                    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+                } else {
+                    return (bytes / (1024 * 1024 * 1024)).toFixed(1) + ' GB';
+                }
+            }
+
+            function displayDetailedReport(data) {
+                let reportHTML = `
+                    <div class="report-section">
+                        <h3 class="report-section-title">Basic Information</h3>
+                        <div class="report-data-row">
+                            <div class="report-label">File Name:</div>
+                            <div class="report-value">${currentFile.name}</div>
+                        </div>
+                        <div class="report-data-row">
+                            <div class="report-label">File Size:</div>
+                            <div class="report-value">${formatFileSize(currentFile.size)}</div>
+                        </div>
+                        <div class="report-data-row">
+                            <div class="report-label">File Type:</div>
+                            <div class="report-value">${currentFile.type || 'Unknown'}</div>
+                        </div>
+                        <div class="report-data-row">
+                            <div class="report-label">Scan Date:</div>
+                            <div class="report-value">${new Date().toLocaleString()}</div>
+                        </div>
+                        <div class="report-data-row">
+                            <div class="report-label">Status:</div>
+                            <div class="report-value">
+                                <span class="report-status ${getStatusClass(data.status)}">
+                                    ${data.status}
+                                </span>
+                            </div>
+                        </div>`;
+
+                if (data.safety_rating !== undefined) {
+                    reportHTML += `
+                        <div class="report-data-row">
+                            <div class="report-label">Safety Rating:</div>
+                            <div class="report-value">
+                                <div class="risk-meter">
+                                    <div class="risk-indicator" style="left: ${data.safety_rating}%"></div>
+                                </div>
+                                ${data.safety_rating}/100
+                            </div>
+                        </div>`;
+                }
+
+                reportHTML += `</div>`;
+
+                if (data.extracted_steganography) {
+                    reportHTML += `
+                        <div class="report-section stego-section">
+                            <h3 class="report-section-title alert-title">
+                                <i class="fas fa-exclamation-triangle"></i> Steganography Detected
+                            </h3>
+                            <div class="report-data-row">
+                                <div class="report-label">Detection Method:</div>
+                                <div class="report-value">${data.stego_details || 'Hidden data detected in file'}</div>
+                            </div>
+                            <div class="report-data-row">
+                                <div class="report-label">Hidden Content:</div>
+                                <div class="report-value">
+                                    <div class="hidden-content-box">
+                                        <pre>${data.extracted_steganography}</pre>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="report-note">
+                                <i class="fas fa-info-circle"></i> Steganography is the practice of concealing information within 
+                                other non-secret data or a physical object. This file contains hidden data that may require 
+                                further investigation.
+                            </div>
+                        </div>`;
+                }
+
+                if (data.hashes) {
+                    reportHTML += `
+                        <div class="report-section">
+                            <h3 class="report-section-title">File Hashes</h3>`;
+                    
+                    if (data.hashes.md5) {
+                        reportHTML += `
+                            <div class="report-data-row">
+                                <div class="report-label">MD5:</div>
+                                <div class="report-value">${data.hashes.md5}</div>
+                            </div>`;
+                    }
+                    
+                    if (data.hashes.sha1) {
+                        reportHTML += `
+                            <div class="report-data-row">
+                                <div class="report-label">SHA-1:</div>
+                                <div class="report-value">${data.hashes.sha1}</div>
+                            </div>`;
+                    }
+                    
+                    if (data.hashes.sha256) {
+                        reportHTML += `
+                            <div class="report-data-row">
+                                <div class="report-label">SHA-256:</div>
+                                <div class="report-value">${data.hashes.sha256}</div>
+                            </div>`;
+                    }
+                    
+                    reportHTML += `</div>`;
+                }
+
+                if (data.threats && data.threats.length > 0) {
+                    reportHTML += `
+                        <div class="report-section">
+                            <h3 class="report-section-title">Detected Threats</h3>
+                            <ul>`;
+                    
+                    data.threats.forEach(threat => {
+                        reportHTML += `
+                            <li>
+                                <strong>${threat.name || 'Unknown Threat'}</strong>
+                                ${threat.description ? ' - ' + threat.description : ''}
+                                ${threat.severity ? ' (Severity: ' + threat.severity + ')' : ''}
+                            </li>`;
+                    });
+                    
+                    reportHTML += `
+                            </ul>
+                        </div>`;
+                }
+
+                if (data.comments) {
+                    reportHTML += `
+                        <div class="report-section">
+                            <h3 class="report-section-title">Analysis</h3>
+                            <div class="report-data-row">
+                                <div class="report-value pre-line">${data.comments}</div>
+                            </div>
+                        </div>`;
+                }
+
+                reportContent.innerHTML = reportHTML;
+            }
+
+            function getStatusClass(status) {
+                status = status.toLowerCase();
+                if (status === 'safe') return 'status-safe';
+                if (status === 'malicious') return 'status-danger';
+                return 'status-warning';
+            }
+
+            // Feedback form
+            document.getElementById('feedback-btn').addEventListener('click', function () {
+                const feedbackText = document.getElementById('feedback-text').value;
+                
+                if (feedbackText.trim() === '') {
+                    alert('Please enter your feedback before submitting');
+                    return;
+                }
+                
+                const formData = new FormData();
+                formData.append('feedback', feedbackText);
+                
+                fetch('{% url "services:feedback_submit" %}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken,
+                    },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast("Thank you for your feedback!", true);
+                        document.getElementById('feedback-text').value = '';
+                    } else if (data.error === 'login_required') {
+                        showToast(data.message, false);
+                    } else {
+                        showToast(data.error || 'Error submitting feedback', false);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('Error submitting feedback. Please try again.', false);
+                });
+            });
+
+            function showToast(message, isSuccess = true) {
+                const toast = document.createElement('div');
+                toast.className = `feedback-toast ${isSuccess ? 'success' : 'error'}`;
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.classList.add('show-toast');
+                }, 10);
+                
+                setTimeout(() => {
+                    toast.classList.remove('show-toast');
+                    setTimeout(() => {
+                        document.body.removeChild(toast);
+                    }, 300);
+                }, 3000);
+            }
+
+            // Toggle FAQ items
+            document.querySelectorAll('.faq-question').forEach(question => {
+                question.addEventListener('click', () => {
+                    question.parentElement.classList.toggle('active');
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

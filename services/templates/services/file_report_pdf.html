@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Analysis Report</title>
+    <style>
+        @page {
+            size: letter portrait;
+            margin: 1cm;
+        }
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            color: #333;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #00d2f7;
+            padding-bottom: 10px;
+        }
+        
+        .header h1 {
+            color: #0c2f38;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            color: #666;
+            margin-top: 0;
+        }
+        
+        .section {
+            margin-bottom: 25px;
+        }
+        
+        .section h2 {
+            color: #0c2f38;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        
+        table td {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        table td:first-child {
+            font-weight: bold;
+            width: 200px;
+            color: #555;
+        }
+        
+        .status-safe {
+            color: #4CAF50;
+            background-color: #E8F5E9;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
+        .status-warning {
+            color: #FFA000;
+            background-color: #FFF8E1;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
+        .status-danger {
+            color: #F44336;
+            background-color: #FFEBEE;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
+        .warnings {
+            background-color: #FFF8E1;
+            border-left: 4px solid #FFA000;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .warnings h2 {
+            color: #856404;
+            margin-top: 0;
+        }
+        
+        .warnings ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .warnings li {
+            margin-bottom: 5px;
+        }
+        
+        .analysis {
+            white-space: pre-line;
+        }
+        
+        .stego-section {
+            background-color: #FFF8E1;
+            border-left: 4px solid #FF9800;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stego-title {
+            color: #e65100;
+            display: flex;
+            align-items: center;
+            margin-top: 0;
+        }
+        
+        .hidden-content-box {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        
+        .hidden-content-box pre {
+            margin: 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        
+        .risk-meter {
+            width: 100%;
+            height: 20px;
+            background: linear-gradient(to right, #F44336, #FFC107, #4CAF50);
+            border-radius: 10px;
+            position: relative;
+            margin: 10px 0;
+        }
+        
+        .risk-indicator {
+            position: absolute;
+            top: -5px;
+            width: 8px;
+            height: 30px;
+            background-color: #333;
+            border-radius: 2px;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>File Analysis Report</h1>
+        <p>Generated: {{ generated_date }}</p>
+    </div>
+    
+    <div class="section">
+        <h2>Basic Information</h2>
+        <table>
+            <tr>
+                <td>File Name:</td>
+                <td>{{ report.file_name }}</td>
+            </tr>
+            <tr>
+                <td>File Size:</td>
+                <td>{{ report.file_size }}</td>
+            </tr>
+            <tr>
+                <td>File Type:</td>
+                <td>{{ report.file_type }}</td>
+            </tr>
+            <tr>
+                <td>Scan Date:</td>
+                <td>{{ report.scan_date }}</td>
+            </tr>
+            <tr>
+                <td>Safety Rating:</td>
+                <td>
+                    {{ report.safety_rating }}/100
+                    <div class="risk-meter">
+                        <div class="risk-indicator" style="left: {{ report.safety_rating }}%;"></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>Status:</td>
+                <td>
+                    {% if report.status == "Safe" %}
+                        <span class="status-safe">{{ report.status }}</span>
+                    {% elif report.status == "Malicious" %}
+                        <span class="status-danger">{{ report.status }}</span>
+                    {% else %}
+                        <span class="status-warning">{{ report.status }}</span>
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+    </div>
+    
+    <div class="section">
+        <h2>File Hashes</h2>
+        <table>
+            <tr>
+                <td>MD5:</td>
+                <td>{{ report.hash_md5 }}</td>
+            </tr>
+            <tr>
+                <td>SHA-1:</td>
+                <td>{{ report.hash_sha1 }}</td>
+            </tr>
+            <tr>
+                <td>SHA-256:</td>
+                <td>{{ report.hash_sha256 }}</td>
+            </tr>
+        </table>
+    </div>
+    
+    {% if report.metadata %}
+    <div class="section">
+        <h2>File Metadata</h2>
+        <table>
+            {% for key, value in report.metadata.items %}
+            <tr>
+                <td>{{ key|title|cut:"_"|capfirst }}:</td>
+                <td>
+                    {% if value|stringformat:"s"|length > 100 %}
+                        {{ value|stringformat:"s"|slice:":100" }}...
+                    {% else %}
+                        {{ value }}
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            
+            {% if report.creation_time %}
+            <tr>
+                <td>Creation Time:</td>
+                <td>{{ report.creation_time }}</td>
+            </tr>
+            {% endif %}
+            
+            {% if report.modification_time %}
+            <tr>
+                <td>Last Modified:</td>
+                <td>{{ report.modification_time }}</td>
+            </tr>
+            {% endif %}
+        </table>
+    </div>
+    {% endif %}
+    
+    {% if report.extracted_steganography %}
+    <div class="section stego-section">
+        <h2 class="stego-title">Steganography Detected</h2>
+        <p>Hidden content was detected within this file:</p>
+        <div class="hidden-content-box">
+            <pre>{{ report.extracted_steganography }}</pre>
+        </div>
+        <p><em>Note: Steganography is the practice of concealing messages or information within other non-secret data or a physical object.</em></p>
+    </div>
+    {% endif %}
+    
+    {% if report.warnings %}
+    <div class="warnings">
+        <h2>Warnings</h2>
+        <ul>
+            {% for warning in report.warnings %}
+            <li>{{ warning }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    
+    <div class="section">
+        <h2>Analysis</h2>
+        <div class="analysis">
+            {{ report.comments|linebreaks }}
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>This report was generated by V.A.S.T. File Scanner. All information is provided for informational purposes only.</p>
+        <p>© VAST - Virus Analysis Scanning Tool</p>
+    </div>
+</body>
+</html>
